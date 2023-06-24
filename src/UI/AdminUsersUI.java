@@ -40,7 +40,7 @@ public class AdminUsersUI
         ButtonClickListener listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
-        StringBuilder aux = new StringBuilder();
+
         FileHandler file = new FileHandler("data/clients.txt");
         file.read(new FileHandler.GetReadDataCallback()
         {
@@ -50,6 +50,7 @@ public class AdminUsersUI
                 if (currentUserName.equals(client.getUsername()))
                     return true; // we don't want to display our admin account
 
+                StringBuilder aux = new StringBuilder();
                 aux.append("<html><b>").append(hash.get("name")).append(" ").append(hash.get("lastname")).append("</b>(<font color='red'>@").append(currentUserName)
                         .append("</font>)<br>").append(hash.get("email")).append("</html>");
 
@@ -60,7 +61,6 @@ public class AdminUsersUI
                 frame.add(profilButton);
                 profilButton.setVisible(false);
                 myList.add(profilButton);
-                aux.setLength(0);
                 return true;
             }
         });
