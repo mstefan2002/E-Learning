@@ -88,24 +88,25 @@ public class Util
             fileName = fileName+generateRandomString(10);
         return fileName;
     }
+    // true = the director already exists
+    // false = the directory does not exist, but we created it
     public static boolean Director(String Path)
     {
         java.nio.file.Path path = Paths.get(Path);
 
-        if (!Files.exists(path))
+        if (Files.exists(path))
+            return true;
+
+        try
         {
-            try
-            {
-                Files.createDirectories(path);
-            }
-            catch (Exception e)
-            {
-                System.out.println("Failed to create directory: " + e);
-                System.exit(0);
-            }
-            return false;
+            Files.createDirectories(path);
         }
-        return true;
+        catch (Exception e)
+        {
+            System.out.println("Failed to create directory: " + e);
+            System.exit(0);
+        }
+        return false;
     }
     public static String generateRandomString(int length)
     {

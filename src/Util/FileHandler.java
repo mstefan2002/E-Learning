@@ -89,30 +89,33 @@ public class FileHandler
             String line;
             while ((line = reader.readLine()) != null)
             {
-                Map<String,String> tempHash = new HashMap<>();
+                Map<String, String> tempHash = new HashMap<>();
                 String[] tokens = line.split(" ");
                 for (int i = 0; i < tokens.length; i += 2)
-                    tempHash.put(decodeHtml(tokens[i]),decodeHtml(tokens[i + 1]));
+                    tempHash.put(decodeHtml(tokens[i]), decodeHtml(tokens[i + 1]));
 
-                if(tempHash.get(key).equals(value))
+                if (!tempHash.get(key).equals(value))
                 {
-                    if(typeEdit == 2)
-                        continue;
-                    StringBuilder aux= new StringBuilder();
-                    if(typeEdit == 0)
-                    {
-                        tempHash.putAll(hash);
-                        for (Map.Entry<String, String> entry : tempHash.entrySet())
-                            aux.append(encodeHtml(entry.getKey())).append(" ").append(encodeHtml(entry.getValue())).append(" ");
-                    }
-                    else if(typeEdit == 1)
-                    {
-                        for (Map.Entry<String, String> entry : hash.entrySet())
-                            aux.append(encodeHtml(entry.getKey())).append(" ").append(encodeHtml(entry.getValue())).append(" ");
-                    }
-                    line = aux.toString();
+                    writer.write(line + System.lineSeparator());
+                    continue;
                 }
-                writer.write(line + System.lineSeparator());
+
+                if (typeEdit == 2)
+                    continue;
+
+                StringBuilder aux = new StringBuilder();
+                if (typeEdit == 0)
+                {
+                    tempHash.putAll(hash);
+                    for (Map.Entry<String, String> entry : tempHash.entrySet())
+                        aux.append(encodeHtml(entry.getKey())).append(" ").append(encodeHtml(entry.getValue())).append(" ");
+                }
+                else if (typeEdit == 1)
+                {
+                    for (Map.Entry<String, String> entry : hash.entrySet())
+                        aux.append(encodeHtml(entry.getKey())).append(" ").append(encodeHtml(entry.getValue())).append(" ");
+                }
+                writer.write(aux + System.lineSeparator());
             }
 
             writer.close();

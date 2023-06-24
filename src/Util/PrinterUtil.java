@@ -32,16 +32,16 @@ public class PrinterUtil implements Printable
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintable(this);
 
-        if (job.printDialog())
+        if (!job.printDialog())
+            return;
+
+        try
         {
-            try
-            {
-                job.print();
-            }
-            catch (PrinterException e)
-            {
-                e.printStackTrace();
-            }
+            job.print();
+        }
+        catch (PrinterException e)
+        {
+            e.printStackTrace();
         }
     }
 }
