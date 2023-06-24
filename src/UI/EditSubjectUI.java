@@ -9,8 +9,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import Util.Output;
@@ -23,15 +21,15 @@ import java.util.Map;
 
 public class EditSubjectUI
 {
-    public final JFrame frame;
-    public final JLabel testLabel,totalpointLabel;
-    public final JTextArea testField;
-    public final JTextArea[] optionsField;
-    public final JTextField[] pointField;
-    public final JButton backButton,saveButton,delButton;
-    public final int idChapter,idLesson,idSubject;
-    public final Subject subj;
-    public final Test test;
+    private final JFrame frame;
+    private final JLabel totalpointLabel;
+    private final JTextArea testField;
+    private final JTextArea[] optionsField;
+    private final JTextField[] pointField;
+    private final JButton saveButton;
+    private final int idChapter,idLesson,idSubject;
+    private final Subject subj;
+    private final Test test;
     public EditSubjectUI(int idChapter,int idLesson,int idSubject)
     {
         this.idChapter = idChapter;
@@ -51,7 +49,7 @@ public class EditSubjectUI
         frame.setLayout(null);
         frame.setSize(1200, 720);
 
-        testLabel = new JLabel(Lang.TestLabel);
+        JLabel testLabel = new JLabel(Lang.TestLabel);
         testLabel.setBounds(20, 20, 200, 30);
 
         testField = new JTextArea();
@@ -115,22 +113,22 @@ public class EditSubjectUI
             frame.add(pointField[i]);
         }
         int it=0;
-        for (Map.Entry<String, Integer> entry : subj.getOptions().entrySet()) {
+        for (Map.Entry<String, Integer> entry : subj.getOptions().entrySet())
+        {
             optionsField[it].setText(entry.getKey());
             pointField[it].setText(String.valueOf(entry.getValue()));
             ++it;
         }
 
-        delButton = new JButton(Lang.DeleteSubjectLabel);
+        JButton delButton = new JButton(Lang.DeleteSubjectLabel);
         delButton.setBounds(975, 120, 150, 50);
 
-        backButton = new JButton(Lang.Cancel);
+        JButton backButton = new JButton(Lang.Cancel);
         backButton.setBounds(975, 170, 150, 50);
 
-        ButtonClickListener listener = new ButtonClickListener(this);
-        saveButton.addActionListener(listener);
-        delButton.addActionListener(listener);
-        backButton.addActionListener(listener);
+        saveButton.addActionListener(e -> saveSubject());
+        delButton.addActionListener(e -> deleteSubject());
+        backButton.addActionListener(e -> closeFrame());
 
         frame.add(totalpointLabel);
         frame.add(testLabel);
@@ -147,10 +145,14 @@ public class EditSubjectUI
             @Override
             public void windowClosing(WindowEvent e)
             {
-                frame.dispose();
-                Controller.ShowSearchSubjUI();
+                closeFrame();
             }
         });
+    }
+    private void closeFrame()
+    {
+        frame.dispose();
+        Controller.ShowSearchSubjUI();
     }
     private void checkPoints(int idOption)
     {
@@ -175,119 +177,98 @@ public class EditSubjectUI
         saveButton.setEnabled(currPoint > 0);
         totalpointLabel.setText(Lang.TotalPoints_SubjLabel.replace("{{$points}}",String.valueOf(currPoint)));
     }
-    static class ButtonClickListener implements ActionListener
+    public void deleteSubject()
     {
-        private final EditSubjectUI self;
-        public ButtonClickListener(EditSubjectUI self)
+        FileHandler file = new FileHandler(test.getPath());
+        if (!file.deleteLine("enunt", subj.getEnunt()))
         {
-            this.self = self;
+            Output.PopUpAlert(Lang.GenericError);
+            return;
         }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
+        boolean deleteTest = false;
+        if (idLesson == 0)
         {
-            Object source = e.getSource();
-            if (source == self.backButton) {
-                self.frame.dispose();
-                Controller.ShowSearchSubjUI();
-            }
-            else if(source == self.delButton)
+            Controller.getChapters().get(idChapter).getFinalTest().getSubjects().remove(idSubject);
+            if (Controller.getChapters().get(idChapter).getFinalTest().getSubjects().size() == 0)
             {
-                FileHandler file = new FileHandler(self.test.getPath());
-                if (!file.deleteLine("enunt", self.subj.getEnunt()))
-                {
-                    Output.PopUpAlert(Lang.GenericError);
-                    return;
-                }
-                boolean deleteTest = false;
-                if (self.idLesson == 0)
-                {
-                    Controller.getChapters().get(self.idChapter).getFinalTest().getSubjects().remove(self.idSubject);
-                    if (Controller.getChapters().get(self.idChapter).getFinalTest().getSubjects().size() == 0)
-                    {
-                        Controller.getChapters().get(self.idChapter).setTest(null);
-                        deleteTest = true;
-                    }
-                }
-                else
-                {
-                    Controller.getChapters().get(self.idChapter).getLessons().get(self.idLesson).getTest().getSubjects().remove(self.idSubject);
-                    if (Controller.getChapters().get(self.idChapter).getLessons().get(self.idLesson).getTest().getSubjects().size() == 0)
-                    {
-                        Controller.getChapters().get(self.idChapter).getLessons().get(self.idLesson).setTest(null);
-                        deleteTest = true;
-                    }
-                }
-                if(deleteTest)
-                {
-                    File fileTest = new File(self.test.getPath());
-                    if (fileTest.delete())
-                        Output.PopUp(Lang.EmptyTestDeleted);
-                }
-                Output.PopUp(Lang.SuccessDeletingSubject);
-                self.frame.dispose();
-                Controller.ShowSearchSubjUI();
-
-            }
-            else if(source == self.saveButton)
-            {
-                String testField = self.testField.getText();
-                if (testField.trim().isEmpty())
-                {
-                    Output.PopUpAlert(Lang.EmptySubjectField);
-                    return;
-                }
-                for (int i = 0; i < 4; i++)
-                {
-                    if (self.optionsField[i].getText().trim().isEmpty())
-                    {
-                        Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
-                        return;
-                    }
-                }
-
-                Map<String, String> hashMap = new HashMap<>();
-                Map<String, Integer> hashOp = new HashMap<>();
-                hashMap.put("enunt", testField);
-                for (int it = 0; it < 4; ++it)
-                {
-                    int val;
-                    String pointField = self.pointField[it].getText();
-                    if (Util.isValidNumber(pointField) == 0)
-                        val = Integer.parseInt(pointField);
-                    else
-                        val = 0;
-                    String optionField = self.optionsField[it].getText();
-                    hashMap.put(optionField, String.valueOf(val));
-                    hashOp.put(optionField, val);
-                }
-                FileHandler file = new FileHandler(self.test.getPath());
-                if (!file.replace("enunt", self.subj.getEnunt(), hashMap))
-                {
-                    Output.PopUpAlert(Lang.GenericError);
-                    return;
-                }
-                if (self.idLesson == 0)
-                {
-                    Controller.getChapters().get(self.idChapter).getFinalTest().getSubjects().get(self.idSubject)
-                            .setEnunt(testField);
-                    Controller.getChapters().get(self.idChapter).getFinalTest().getSubjects().get(self.idSubject)
-                            .setOptions(hashOp);
-                }
-                else
-                {
-                    Controller.getChapters().get(self.idChapter).getLessons().get(self.idLesson)
-                            .getTest().getSubjects().get(self.idSubject)
-                            .setEnunt(testField);
-                    Controller.getChapters().get(self.idChapter).getLessons().get(self.idLesson)
-                            .getTest().getSubjects().get(self.idSubject)
-                            .setOptions(hashOp);
-                }
-
-                Output.PopUp(Lang.SuccessEditSubject);
-                self.frame.dispose();
-                Controller.ShowSearchSubjUI();
+                Controller.getChapters().get(idChapter).setTest(null);
+                deleteTest = true;
             }
         }
+        else
+        {
+            Controller.getChapters().get(idChapter).getLessons().get(idLesson).getTest().getSubjects().remove(idSubject);
+            if (Controller.getChapters().get(idChapter).getLessons().get(idLesson).getTest().getSubjects().size() == 0)
+            {
+                Controller.getChapters().get(idChapter).getLessons().get(idLesson).setTest(null);
+                deleteTest = true;
+            }
+        }
+        if(deleteTest)
+        {
+            File fileTest = new File(test.getPath());
+            if (fileTest.delete())
+                Output.PopUp(Lang.EmptyTestDeleted);
+        }
+        Output.PopUp(Lang.SuccessDeletingSubject);
+        closeFrame();
+    }
+    public void saveSubject()
+    {
+        String testFieldText = testField.getText();
+        if (testFieldText.trim().isEmpty())
+        {
+            Output.PopUpAlert(Lang.EmptySubjectField);
+            return;
+        }
+        for (int i = 0; i < 4; i++)
+        {
+            if (optionsField[i].getText().trim().isEmpty())
+            {
+                Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
+                return;
+            }
+        }
+
+        Map<String, String> hashMap = new HashMap<>();
+        Map<String, Integer> hashOp = new HashMap<>();
+        hashMap.put("enunt", testFieldText);
+        for (int it = 0; it < 4; ++it)
+        {
+            int val;
+            String pointFieldText = pointField[it].getText();
+            if (Util.isValidNumber(pointFieldText) == 0)
+                val = Integer.parseInt(pointFieldText);
+            else
+                val = 0;
+            String optionField = optionsField[it].getText();
+            hashMap.put(optionField, String.valueOf(val));
+            hashOp.put(optionField, val);
+        }
+        FileHandler file = new FileHandler(test.getPath());
+        if (!file.replace("enunt", subj.getEnunt(), hashMap))
+        {
+            Output.PopUpAlert(Lang.GenericError);
+            return;
+        }
+        if (idLesson == 0)
+        {
+            Controller.getChapters().get(idChapter).getFinalTest().getSubjects().get(idSubject)
+                    .setEnunt(testFieldText);
+            Controller.getChapters().get(idChapter).getFinalTest().getSubjects().get(idSubject)
+                    .setOptions(hashOp);
+        }
+        else
+        {
+            Controller.getChapters().get(idChapter).getLessons().get(idLesson)
+                    .getTest().getSubjects().get(idSubject)
+                    .setEnunt(testFieldText);
+            Controller.getChapters().get(idChapter).getLessons().get(idLesson)
+                    .getTest().getSubjects().get(idSubject)
+                    .setOptions(hashOp);
+        }
+
+        Output.PopUp(Lang.SuccessEditSubject);
+        closeFrame();
     }
 }
