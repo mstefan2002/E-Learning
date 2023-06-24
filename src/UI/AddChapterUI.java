@@ -39,23 +39,18 @@ public class AddChapterUI
         backButton.addActionListener(e ->
         {
             if (e.getSource() == backButton)
-            {
                 frame.dispose();
-            }
         });
 
         JButton addButton = new JButton(Lang.Add);
         addButton.addActionListener(e ->
         {
             if (e.getSource() == addButton)
-            {
                 addChapter();
-            }
         });
 
         buttonPanel.add(backButton);
         buttonPanel.add(addButton);
-
 
         frame.add(nameLabel);
         frame.add(nameField);
@@ -84,17 +79,18 @@ public class AddChapterUI
         }
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("name",name);
-        Chapter chapter = new Chapter(name);
-        int sz = szChapter+1;
-        Controller.getChapters().put(sz,chapter);
-        Controller.getChapters().get(sz).init();
-        FileHandler file = new FileHandler("data/chapters.txt");
 
+        FileHandler file = new FileHandler("data/chapters.txt");
         if(!file.write(hashMap))
         {
             Output.PopUpAlert(Lang.GenericError);
             return;
         }
+
+        Chapter chapter = new Chapter(name);
+        int sz = szChapter+1;
+        Controller.getChapters().put(sz,chapter);
+        Controller.getChapters().get(sz).init();
 
         Output.PopUp(Lang.SuccessAddChapter);
         frame.dispose();
