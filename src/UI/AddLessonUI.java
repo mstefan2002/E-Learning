@@ -46,21 +46,12 @@ public class AddLessonUI
 
         JButton addButton = new JButton(Lang.AddLessonLabel);
         addButton.setBounds(975, 20, 150, 50);
-        addButton.addActionListener(e ->
-        {
-            if (e.getSource() == addButton)
-                addLesson(idChapter, currPage, chapterPage);
-        });
+        addButton.addActionListener(e -> addLesson(idChapter, currPage, chapterPage));
+
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(975, 70, 150, 50);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-            {
-                frame.dispose();
-                Controller.ShowLessonListAdminUI(idChapter, currPage, chapterPage);
-            }
-        });
+        backButton.addActionListener(e -> closeFrame(idChapter,currPage,chapterPage));
+
         frame.add(nameLabel);
         frame.add(nameField);
         frame.add(lessonLabel);
@@ -71,6 +62,11 @@ public class AddLessonUI
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
+    }
+    public void closeFrame(int idChapter,int currPage,int chapterPage)
+    {
+        frame.dispose();
+        Controller.ShowLessonListAdminUI(idChapter, currPage, chapterPage);
     }
     public void addLesson(int idChapter,int currPage,int chapterPage)
     {
@@ -120,7 +116,6 @@ public class AddLessonUI
         Controller.getChapters().get(idChapter).getLessons().get(szLesson).init();
 
         Output.PopUp(Lang.SuccessAddLesson);
-        frame.dispose();
-        Controller.ShowLessonListAdminUI(idChapter, currPage, chapterPage);
+        closeFrame(idChapter,currPage,chapterPage);
     }
 }

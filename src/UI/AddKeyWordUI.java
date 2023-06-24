@@ -39,18 +39,12 @@ public class AddKeyWordUI
 
         JButton addButton = new JButton(Lang.Add);
         addButton.setBounds(400, 510, 150, 50);
-        addButton.addActionListener(e ->
-        {
-            if (e.getSource() == addButton)
-                addWord(idLesson,idChapter, lessonPage, chapterPage,originalframe);
-        });
+        addButton.addActionListener(e -> addWord(idLesson,idChapter, lessonPage, chapterPage,originalframe));
+
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(250, 510, 150, 50);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-                frame.dispose();
-        });
+        backButton.addActionListener(e -> frame.dispose());
+
         frame.add(nameLabel);
         frame.add(nameField);
         frame.add(infoLabel);

@@ -32,18 +32,12 @@ public class EditChapterUI
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setSize(300, 150);
+
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-                frame.dispose();
-        });
+        backButton.addActionListener(e -> frame.dispose());
+
         JButton saveButton = new JButton(Lang.Save);
-        saveButton.addActionListener(e ->
-        {
-            if (e.getSource() == saveButton)
-                saveChapter(idChapter,lessonPage,chapterPage);
-        });
+        saveButton.addActionListener(e -> saveChapter(idChapter,lessonPage,chapterPage));
 
         buttonPanel.add(backButton);
         buttonPanel.add(saveButton);

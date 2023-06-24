@@ -52,38 +52,23 @@ public class EditUserUI
         ageField = new JTextField(String.valueOf(userclient.getAge()));
 
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-            {
-                frame.dispose();
-            }
-        });
+        backButton.addActionListener(e -> frame.dispose());
+
         JButton deleteButton = new JButton(Lang.DeleteUserLabel);
         deleteButton.addActionListener(e ->
         {
-            if (e.getSource() == deleteButton)
+            FileHandler file = new FileHandler("data/clients.txt");
+            if(!file.deleteLine("user",userName))
             {
-                FileHandler file = new FileHandler("data/clients.txt");
-                if(!file.deleteLine("user",userName))
-                {
-                    Output.PopUpAlert(Lang.GenericError);
-                    return;
-                }
-                Output.PopUp(Lang.SuccessDeletingUser);
-                frame.dispose();
-                originFrame.dispose();
-                Controller.ShowUsersUI(curPage);
+                Output.PopUpAlert(Lang.GenericError);
+                return;
             }
+            Output.PopUp(Lang.SuccessDeletingUser);
+            closeFrame();
         });
+
         JButton saveButton = new JButton(Lang.Save);
-        saveButton.addActionListener(e ->
-        {
-            if (e.getSource() == saveButton)
-            {
-                EditUser();
-            }
-        });
+        saveButton.addActionListener(e -> EditUser());
 
         JPanel panelTests = new JPanel();
         panelTests.setLayout(new GridLayout(0,1));
@@ -107,7 +92,6 @@ public class EditUserUI
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setBounds(0, 100, 800, 640);
 
-
         panel.add(userLabel);
         panel.add(userField);
         panel.add(passwordLabel);
@@ -128,6 +112,12 @@ public class EditUserUI
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
+    }
+    public void closeFrame()
+    {
+        frame.dispose();
+        originFrame.dispose();
+        Controller.ShowUsersUI(curPage);
     }
     public JButton addTest(String chapterName, int idLesson,int totalPoints,String testName)
     {
@@ -253,7 +243,7 @@ public class EditUserUI
         {
             public boolean getHash(Map<String, String> hash)
             {
-                if(hash.get("user").equals(clientUserName)) // we skip current account
+                if (hash.get("user").equals(clientUserName)) // we skip current account
                     return true;
 
                 if (hash.get("user").equals(user)) // we found an account that have the new username
@@ -277,9 +267,7 @@ public class EditUserUI
                     return;
                 }
                 Output.PopUp(Lang.SuccessEditUser);
-                frame.dispose();
-                originFrame.dispose();
-                Controller.ShowUsersUI(curPage);
+                closeFrame();
             }
         });
 

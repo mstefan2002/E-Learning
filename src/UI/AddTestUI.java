@@ -6,8 +6,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import Lang.Lang;
 import Learn.Chapter;
@@ -117,10 +115,12 @@ public class AddTestUI
         backButton = new JButton(Lang.Cancel);
         backButton.setBounds(975, 170, 150, 50);
 
-        ButtonClickListener listener = new ButtonClickListener(this);
-        addSubjButton.addActionListener(listener);
-        addButton.addActionListener(listener);
-        backButton.addActionListener(listener);
+        addSubjButton.addActionListener(e -> {
+            if (addSubj())
+                checkPoints(0);
+        });
+        addButton.addActionListener(e -> addTest());
+        backButton.addActionListener(e -> closeFrame());
 
         frame.add(totalpointLabel);
         frame.add(testLabel);
@@ -137,13 +137,63 @@ public class AddTestUI
             @Override
             public void windowClosing(WindowEvent e)
             {
-                frame.dispose();
-                if(idLesson == 0)
-                    Controller.ShowLessonListAdminUI(idChapter,lessonPage, chapterPage);
-                else
-                    Controller.ShowLessonAdminUI(idLesson,idChapter,lessonPage,chapterPage);
+                closeFrame();
             }
         });
+    }
+    public void closeFrame()
+    {
+        frame.dispose();
+        if(idLesson == 0)
+            Controller.ShowLessonListAdminUI(idChapter, lessonPage, chapterPage);
+        else
+            Controller.ShowLessonAdminUI(idLesson, idChapter,lessonPage,chapterPage);
+    }
+    public void addTest()
+    {
+        if(!addSubj())
+            return;
+
+        Map<String, String> hashMapTest = new HashMap<>();
+        Chapter chapter = Controller.getChapters().get(idChapter);
+        String safename;
+        if(idLesson == 0)
+            safename = "finaltest.txt";
+        else
+            safename = chapter.getLessons().get(idLesson).getFileName();
+
+        FileHandler file = new FileHandler("data/"+chapter.getName() + "_tests/" + safename);
+
+        for (Subject obj : subjectList)
+        {
+            hashMapTest.clear();
+            Map<String,Integer> hashMap = obj.getOptions();
+            for (Map.Entry<String,Integer> entry : hashMap.entrySet())
+                hashMapTest.put(entry.getKey(),String.valueOf(entry.getValue()));
+
+            hashMapTest.put("enunt",obj.getEnunt());
+            if(!file.write(hashMapTest))
+            {
+                Output.PopUpAlert(Lang.GenericError);
+                return;
+            }
+        }
+
+        frame.dispose();
+        if(idLesson == 0)
+        {
+            Test test = new Test(idChapter, -1);
+            Controller.getChapters().get(idChapter).setTest(test);
+            Controller.ShowLessonListAdminUI(idChapter, lessonPage, chapterPage);
+        }
+        else
+        {
+            Test test = new Test(idChapter,idLesson);
+            Controller.getChapters().get(idChapter).getLessons().get(idLesson).setTest(test);
+            Controller.ShowLessonAdminUI(idLesson, idChapter,lessonPage,chapterPage);
+        }
+
+        Output.PopUp(Lang.SuccessAddTest);
     }
     private void checkPoints(int idOption)
     {
@@ -195,122 +245,51 @@ public class AddTestUI
 
         totalpointLabel.setText(Lang.TotalPointsLabel.replace("{{$points}}",String.valueOf(totalPoint)).replace("{{$subjects}}",String.valueOf(subjectList.size())));
     }
+    public boolean checkEmpty()
+    {
+        if(testField.getText().trim().isEmpty())
+        {
+            Output.PopUpAlert(Lang.EmptySubjectField);
+            return true;
+        }
+        for(int i=0;i<4;i++)
+        {
+            if(optionsField[i].getText().trim().isEmpty())
+            {
+                Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean addSubj()
+    {
+        if(checkEmpty())
+            return false;
+
+        Subject subj = new Subject();
+        subj.setEnunt(testField.getText());
+        testField.setText("");
+        Map<String,Integer> aux = new HashMap<>();
+        for(int it=0;it<4;++it)
+        {
+            int val;
+            String pointsFromField=pointField[it].getText();
+            if (Util.isValidNumber(pointsFromField) == 0)
+                val = Integer.parseInt(pointsFromField);
+            else
+                val = 0;
+            aux.put(optionsField[it].getText(),val);
+            optionsField[it].setText("");
+            pointField[it].setText("");
+        }
+        subj.setOptions(aux);
+        addSubject(subj);
+
+        return true;
+    }
     public void addSubject(Subject subj)
     {
         subjectList.add(subj);
-    }
-    static class ButtonClickListener implements ActionListener
-    {
-        private final AddTestUI self;
-        public ButtonClickListener(AddTestUI self)
-        {
-            this.self = self;
-        }
-        public boolean checkEmpty()
-        {
-            if(self.testField.getText().trim().isEmpty())
-            {
-                Output.PopUpAlert(Lang.EmptySubjectField);
-                return true;
-            }
-            for(int i=0;i<4;i++)
-            {
-                if(self.optionsField[i].getText().trim().isEmpty())
-                {
-                    Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
-                    return true;
-                }
-            }
-            return false;
-        }
-        public boolean addSubj()
-        {
-            if(checkEmpty())
-                return false;
-            Subject subj = new Subject();
-            subj.setEnunt(self.testField.getText());
-            self.testField.setText("");
-            Map<String,Integer> aux = new HashMap<>();
-            for(int it=0;it<4;++it)
-            {
-                int val;
-                String pointsFromField=self.pointField[it].getText();
-                if (Util.isValidNumber(pointsFromField) == 0)
-                    val = Integer.parseInt(pointsFromField);
-                else
-                    val = 0;
-                aux.put(self.optionsField[it].getText(),val);
-                self.optionsField[it].setText("");
-                self.pointField[it].setText("");
-            }
-            subj.setOptions(aux);
-            self.addSubject(subj);
-
-            return true;
-        }
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            Object source = e.getSource();
-            if (source == self.addSubjButton)
-            {
-                if (addSubj())
-                    self.checkPoints(0);
-            }
-            else if (source == self.addButton)
-            {
-                if(!addSubj())
-                    return;
-
-                Map<String, String> hashMapTest = new HashMap<>();
-                Chapter chapter = Controller.getChapters().get(self.idChapter);
-                String safename;
-                if(self.idLesson == 0)
-                    safename = "finaltest.txt";
-                else
-                    safename = chapter.getLessons().get(self.idLesson).getFileName();
-
-                FileHandler file = new FileHandler("data/"+chapter.getName() + "_tests/" + safename);
-
-                for (Subject obj : self.subjectList)
-                {
-                    hashMapTest.clear();
-                    Map<String,Integer> hashMap = obj.getOptions();
-                    for (Map.Entry<String,Integer> entry : hashMap.entrySet())
-                        hashMapTest.put(entry.getKey(),String.valueOf(entry.getValue()));
-
-                    hashMapTest.put("enunt",obj.getEnunt());
-                    if(!file.write(hashMapTest))
-                    {
-                        Output.PopUpAlert(Lang.GenericError);
-                        return;
-                    }
-                }
-
-                self.frame.dispose();
-                if(self.idLesson == 0)
-                {
-                    Test test = new Test(self.idChapter, -1);
-                    Controller.getChapters().get(self.idChapter).setTest(test);
-                    Controller.ShowLessonListAdminUI(self.idChapter, self.lessonPage, self.chapterPage);
-                }
-                else
-                {
-                    Test test = new Test(self.idChapter,self.idLesson);
-                    Controller.getChapters().get(self.idChapter).getLessons().get(self.idLesson).setTest(test);
-                    Controller.ShowLessonAdminUI(self.idLesson, self.idChapter,self.lessonPage,self.chapterPage);
-                }
-
-                Output.PopUp(Lang.SuccessAddTest);
-            }
-            else if (source == self.backButton)
-            {
-                self.frame.dispose();
-                if(self.idLesson == 0)
-                    Controller.ShowLessonListAdminUI(self.idChapter, self.lessonPage, self.chapterPage);
-                else
-                    Controller.ShowLessonAdminUI(self.idLesson, self.idChapter,self.lessonPage,self.chapterPage);
-            }
-        }
     }
 }

@@ -36,18 +36,10 @@ public class AddChapterUI
         buttonPanel.setSize(300, 150);
 
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-                frame.dispose();
-        });
+        backButton.addActionListener(e -> frame.dispose());
 
         JButton addButton = new JButton(Lang.Add);
-        addButton.addActionListener(e ->
-        {
-            if (e.getSource() == addButton)
-                addChapter();
-        });
+        addButton.addActionListener(e -> addChapter());
 
         buttonPanel.add(backButton);
         buttonPanel.add(addButton);
