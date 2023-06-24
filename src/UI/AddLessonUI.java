@@ -49,9 +49,7 @@ public class AddLessonUI
         addButton.addActionListener(e ->
         {
             if (e.getSource() == addButton)
-            {
                 addLesson(idChapter, currPage, chapterPage);
-            }
         });
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(975, 70, 150, 50);
@@ -77,12 +75,12 @@ public class AddLessonUI
     public void addLesson(int idChapter,int currPage,int chapterPage)
     {
         String name = nameField.getText();
-        String lessonText = lessonField.getText();
         if(name.trim().isEmpty())
         {
             Output.PopUpAlert(Lang.EmptyLessonNameField);
             return;
         }
+        String lessonText = lessonField.getText();
         if(lessonText.trim().isEmpty())
         {
             Output.PopUpAlert(Lang.EmptyLessonField);
