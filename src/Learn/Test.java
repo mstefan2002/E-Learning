@@ -35,9 +35,11 @@ public class Test
                 {
                     String key = entry.getKey();
                     if(key.equals("enunt"))
+                    {
                         subj.setEnunt(entry.getValue());
-                    else
-                        hashMap.put(key,Integer.parseInt(entry.getValue()));
+                        continue;
+                    }
+                    hashMap.put(key,Integer.parseInt(entry.getValue()));
                 }
                 subj.setOptions(hashMap);
                 subjects.add(subj);
@@ -47,12 +49,12 @@ public class Test
             @Override
             public void onComplete() // we check if the subject is empty
             {
-                if(subjects.size() == 0)
-                {
-                    Output.PopUpAlert(Lang.GenericError);
-                    System.out.println("We didnt find any subject on the test "+namefile);
-                    System.exit(0);
-                }
+                if(subjects.size() != 0)
+                    return;
+
+                Output.PopUpAlert(Lang.GenericError);
+                System.out.println("We didnt find any subject in the test "+namefile);
+                System.exit(0);
             }
         });
 
