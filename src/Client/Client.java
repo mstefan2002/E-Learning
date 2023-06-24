@@ -27,14 +27,16 @@ public class Client
         {
             public boolean getHash(Map<String, String> hash)
             {
-                if (!hash.get("email").equals(email))
+                if(hash.get("user").equals(getUsername())) // skip our account
                     return true;
-                if(!hash.get("user").equals(getUsername()))
-                    Output.PopUpAlert(Lang.EmailTaken);
-                return true;
+                if (!hash.get("email").equals(email)) // skip if the email doesn't match
+                    return true;
+
+                Output.PopUpAlert(Lang.EmailTaken);
+                return false; // we found an account that matches the new email
             }
             @Override
-            public void onComplete() // we didnt find any account with that email or username so we good to go
+            public void onComplete() // we didn't find any account with that email or username, so we're good to go
             {
                 setName(name);
                 setLastName(lastname);
@@ -46,10 +48,12 @@ public class Client
                 hashMap.put("email",email);
                 hashMap.put("age",String.valueOf(age));
 
-                if(file.edit("user",username,hashMap))
-                    Output.PopUp(Lang.SuccessSaveData);
-                else
+                if(!file.edit("user",username,hashMap))
+                {
                     Output.PopUpAlert(Lang.ErrorSaveData);
+                    return;
+                }
+                Output.PopUp(Lang.SuccessSaveData);
             }
         });
     }
