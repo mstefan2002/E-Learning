@@ -22,7 +22,7 @@ public class Controller
     {
         new LoginUI();
         chapters = new LinkedHashMap<>();
-        Util.Director("data"); // create if not exist
+        Util.Director("data"); // create if it does not exist
         FileHandler file = new FileHandler("data/chapters.txt");
         file.read(new FileHandler.GetReadDataCallback()
         {
