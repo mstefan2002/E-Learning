@@ -177,7 +177,7 @@ public class EditSubjectUI
         saveButton.setEnabled(currPoint > 0);
         totalpointLabel.setText(Lang.TotalPoints_SubjLabel.replace("{{$points}}",String.valueOf(currPoint)));
     }
-    public void deleteSubject()
+    private void deleteSubject()
     {
         FileHandler file = new FileHandler(test.getPath());
         if (!file.deleteLine("enunt", subj.getEnunt()))
@@ -213,7 +213,7 @@ public class EditSubjectUI
         Output.PopUp(Lang.SuccessDeletingSubject);
         closeFrame();
     }
-    public void saveSubject()
+    private void saveSubject()
     {
         String testFieldText = testField.getText();
         if (testFieldText.trim().isEmpty())

@@ -113,13 +113,13 @@ public class EditUserUI
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void closeFrame()
+    private void closeFrame()
     {
         frame.dispose();
         originFrame.dispose();
         Controller.ShowUsersUI(curPage);
     }
-    public JButton addTest(String chapterName, int idLesson,int totalPoints,String testName)
+    private JButton addTest(String chapterName, int idLesson,int totalPoints,String testName)
     {
         String resultTest;
         JButton buttTest = new JButton();
@@ -136,7 +136,7 @@ public class EditUserUI
         );
         return buttTest;
     }
-    public void EditUser()
+    private void EditUser()
     {
         String user = userField.getText();
         switch(Util.isValidUserName(user))

@@ -59,6 +59,7 @@ public class LessonListAdminUI
             lessonButton.setName(String.valueOf(i));
             lessonButton.setToolTipText(aux);
             lessonButton.addActionListener(listener);
+
             frame.add(lessonButton);
             lessonButton.setVisible(false);
             myList.add(lessonButton);
@@ -106,12 +107,15 @@ public class LessonListAdminUI
             @Override
             public void windowClosing(WindowEvent e)
             {
-                frame.dispose();
-                Controller.ShowChaptersAdminUI(lastPage);
+                closeFrame();
             }
         });
     }
-
+    protected void closeFrame()
+    {
+        frame.dispose();
+        Controller.ShowChaptersAdminUI(chapterPage);
+    }
     static class ButtonClickListener implements ActionListener
     {
         LessonListAdminUI self;
@@ -130,14 +134,9 @@ public class LessonListAdminUI
                 Controller.ShowAddLessonUI(self.idChapter,self.currPage,self.chapterPage);
             }
             else if(source==self.editButton)
-            {
                 Controller.ShowEditChapterUI(self.frame,self.idChapter,self.currPage,self.chapterPage);
-            }
             else if (source == self.backButton)
-            {
-                self.frame.dispose();
-                Controller.ShowChaptersAdminUI(self.chapterPage);
-            }
+                self.closeFrame();
             else if(source == self.prevButton)
             {
                 --self.currPage;
@@ -168,12 +167,12 @@ public class LessonListAdminUI
             {
                 for (JButton element : self.myList)
                 {
-                    if (source == element)
-                    {
-                        self.frame.dispose();
-                        Controller.ShowLessonAdminUI(Integer.parseInt(element.getName()),self.idChapter,self.currPage,self.chapterPage);
-                        return;
-                    }
+                    if (source != element)
+                        continue;
+
+                    self.frame.dispose();
+                    Controller.ShowLessonAdminUI(Integer.parseInt(element.getName()),self.idChapter,self.currPage,self.chapterPage);
+                    return;
                 }
             }
         }

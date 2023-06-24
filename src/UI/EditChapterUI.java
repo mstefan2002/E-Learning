@@ -50,7 +50,7 @@ public class EditChapterUI
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void saveChapter(int idChapter,int lessonPage,int chapterPage)
+    private void saveChapter(int idChapter,int lessonPage,int chapterPage)
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())
