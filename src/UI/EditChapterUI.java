@@ -19,16 +19,16 @@ public class EditChapterUI
     {
         this.originFrame = originFrame;
 
-        String name= Controller.getChapters().get(idChapter).getName();
+        String chapterName= Controller.getChapters().get(idChapter).getName();
 
-        frame = new JFrame(name);
+        frame = new JFrame(chapterName);
         frame.setSize(300, 200);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new GridLayout(0,1));
 
         JLabel nameLabel = new JLabel(Lang.NameChapterLabel);
 
-        nameField = new JTextField(name);
+        nameField = new JTextField(chapterName);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setSize(300, 150);
@@ -36,22 +36,17 @@ public class EditChapterUI
         backButton.addActionListener(e ->
         {
             if (e.getSource() == backButton)
-            {
                 frame.dispose();
-            }
         });
         JButton saveButton = new JButton(Lang.Save);
         saveButton.addActionListener(e ->
         {
             if (e.getSource() == saveButton)
-            {
                 saveChapter(idChapter,lessonPage,chapterPage);
-            }
         });
 
         buttonPanel.add(backButton);
         buttonPanel.add(saveButton);
-
 
         frame.add(nameLabel);
         frame.add(nameField);
@@ -72,14 +67,11 @@ public class EditChapterUI
 
         for (int i = 1,szChapter = Controller.getChapters().size(); i <= szChapter; ++i)
         {
-            if(i == idChapter)
+            if(i == idChapter   ||    !Controller.getChapters().get(i).getName().equals(name))
                 continue;
 
-            if(Controller.getChapters().get(i).getName().equals(name))
-            {
-                Output.PopUpAlert(Lang.ChapterAlreadyExists);
-                return;
-            }
+            Output.PopUpAlert(Lang.ChapterAlreadyExists);
+            return;
         }
         Controller.getChapters().get(idChapter).setName(name);
         frame.dispose();

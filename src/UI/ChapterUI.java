@@ -40,13 +40,13 @@ public class ChapterUI
         ButtonClickListener listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
-        String aux;
+
         User user = (User)Controller.getClient();
         for (int i = 1,szChapter=Controller.getChapters().size(); i <= szChapter; ++i)
         {
             Chapter chapter = Controller.getChapters().get(i);
             String chapterName = chapter.getName();
-            aux = Lang.ChapterUserButton.replace("{{$countTests}}",String.valueOf(chapter.getTestsSize()))
+            String aux = Lang.ChapterUserButton.replace("{{$countTests}}",String.valueOf(chapter.getTestsSize()))
                     .replace("{{$userTests}}",String.valueOf(user.getTests(chapterName)))
                     .replace("{{$countLessons}}",String.valueOf(chapter.getLessonsSize()))
                     .replace("{{$userLessons}}",String.valueOf(user.getLessons(chapterName)))
@@ -56,6 +56,7 @@ public class ChapterUI
             chapterButton.setName(String.valueOf(i));
             chapterButton.setToolTipText(aux);
             chapterButton.addActionListener(listener);
+
             frame.add(chapterButton);
             chapterButton.setVisible(false);
             myList.add(chapterButton);
@@ -119,12 +120,11 @@ public class ChapterUI
             {
                 for (JButton element : self.myList)
                 {
-                    if (source == element)
-                    {
-                        self.frame.dispose();
-                        Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),self.currPage);
-                        return;
-                    }
+                    if (source != element)
+                        continue;
+                    self.frame.dispose();
+                    Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),self.currPage);
+                    return;
                 }
             }
         }
