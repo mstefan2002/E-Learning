@@ -42,18 +42,14 @@ public class AddKeyWordUI
         addButton.addActionListener(e ->
         {
             if (e.getSource() == addButton)
-            {
                 addWord(idLesson,idChapter, lessonPage, chapterPage,originalframe);
-            }
         });
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(250, 510, 150, 50);
         backButton.addActionListener(e ->
         {
             if (e.getSource() == backButton)
-            {
                 frame.dispose();
-            }
         });
         frame.add(nameLabel);
         frame.add(nameField);
@@ -69,12 +65,12 @@ public class AddKeyWordUI
     public void addWord(int idLesson,int idChapter, int lessonPage, int chapterPage, JFrame originalframe)
     {
         String name = nameField.getText();
-        String infoText = infoField.getText();
         if(name.trim().isEmpty())
         {
             Output.PopUpAlert(Lang.KeyWordEmpty);
             return;
         }
+        String infoText = infoField.getText();
         if(infoText.trim().isEmpty())
         {
             Output.PopUpAlert(Lang.KeyWordInfoEmpty);
