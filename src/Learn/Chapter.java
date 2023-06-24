@@ -25,7 +25,7 @@ public class Chapter
         if(!fileTest.delete())
         {
             Output.PopUp(Lang.GenericError);
-            System.out.println("We got a problem at chapter removeTest->file.delete");
+            System.out.println("We encountered a problem at the chapter.removeTest->file.delete ("+name+").");
             return false;
         }
         finaltest = null;
@@ -38,40 +38,39 @@ public class Chapter
         int currChapter = Controller.getChapters().size();
         if(Util.Director(key)) // the folder with lessons exists, so we read the files in it
         {
-            String fileName;
+            // we read all the files(except clients.txt where we save if the user read the lesson)
+            // and save them in the local list: lessonsList
             File folder = new File(key);
             File[] files = folder.listFiles();
             if (files != null)
             {
                 for (File file : files)
                 {
-                    if (file.isFile() && !file.getName().equals("clients.txt"))
-                    {
-                        fileName=file.getName();
-                        Lesson lesson = new Lesson(currChapter,key + "/" + fileName,fileName);
-                        lessonsList.add(lesson);
-                    }
+                    if (!file.isFile()||file.getName().equals("clients.txt"))
+                        continue;
+
+                    String fileName=file.getName();
+                    Lesson lesson = new Lesson(currChapter,key + "/" + fileName,fileName);
+                    lessonsList.add(lesson);
                 }
             }
         }
-
+        // we sort the lessons based on their index so that they are sorted in ascending order by date
         Collections.sort(lessonsList);
 
-        int index;
         for (Lesson lesson : lessonsList)
         {
-            index = lesson.getIndex();
+            int index = lesson.getIndex();
             lessons.put(index, lesson);
             lessons.get(index).init();
         }
         key = "data/"+name+"_tests";
-        if(Util.Director(key)) // the folder with tests exists, so we check if the final test exists
-        {
-            File file = new File(key + "/finaltest.txt");
-
-            if (file.exists())
-                finaltest = new Test(currChapter, -1);
-        }
+        if(!Util.Director(key))
+            return;
+        // the folder with tests exists, so we check if the final test exists
+        File file = new File(key + "/finaltest.txt");
+        if (file.exists())
+            finaltest = new Test(currChapter, -1);
     }
     public String getName()
     {
@@ -95,21 +94,21 @@ public class Chapter
         catch (Exception e)
         {
             Output.PopUpAlert(Lang.ErrorChangeChapterName);
-            System.out.println("We found this error: "+e.getMessage());
+            System.out.println("We encountered this error: "+e.getMessage());
             return;
         }
         FileHandler file = new FileHandler("data/chapters.txt");
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("name",name);
 
-        if(file.edit("name",this.name,hashMap))
-            Output.PopUp(Lang.SuccessEditData);
-        else
+        if(!file.edit("name",this.name,hashMap))
         {
             Output.PopUpAlert(Lang.ErrorChangeChapterName);
-            System.out.println("We found a problem at chapter file edit");
+            System.out.println("We encountered a problem while editing the chapter file("+this.name+").");
             return;
         }
+
+        Output.PopUp(Lang.SuccessEditData);
         this.name = name;
     }
 
