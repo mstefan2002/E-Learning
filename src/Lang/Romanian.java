@@ -139,5 +139,6 @@ public class Romanian
         Lang.ExitLabel = "Inchide";
         Lang.TestPointsMessage = "Punctajul tau este {{$userPoints}}/{{$totalPoints}}";
         Lang.LoginFailMessage = "Parola introdusa nu corespunde contului sau contul respectiv nu exista!";
+        Lang.AddUserTitle = "Adauga Utilizator";
     }
 }

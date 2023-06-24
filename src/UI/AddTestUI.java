@@ -252,7 +252,8 @@ public class AddTestUI
         public void actionPerformed(ActionEvent e)
         {
             Object source = e.getSource();
-            if (source == self.addSubjButton) {
+            if (source == self.addSubjButton)
+            {
                 if (addSubj())
                     self.checkPoints(0);
             }

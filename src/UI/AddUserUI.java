@@ -21,7 +21,7 @@ public class AddUserUI
     public AddUserUI(JFrame originFrame)
     {
         this.originFrame = originFrame;
-        frame = new JFrame("Profil");
+        frame = new JFrame(Lang.AddUserTitle);
         frame.setSize(300, 400);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new GridLayout(0,1));
@@ -46,17 +46,13 @@ public class AddUserUI
         backButton.addActionListener(e ->
         {
             if (e.getSource() == backButton)
-            {
                 frame.dispose();
-            }
         });
         JButton addButton = new JButton(Lang.Add);
         addButton.addActionListener(e ->
         {
             if (e.getSource() == addButton)
-            {
                 addUser();
-            }
         });
 
         buttonPanel.add(backButton);
