@@ -45,16 +45,10 @@ public class LoginUI
         frame.setResizable(false);
         frame.setVisible(true);
 
-        loginButton.addActionListener(e ->
-        {
-            if (e.getSource() == loginButton)
-            {
-                PressButton();
-            }
-        });
+        loginButton.addActionListener(e -> PressButton());
 
     }
-    public void PressButton()
+    private void PressButton()
     {
         String username = usernameField.getText();
         if(username.trim().isEmpty())
@@ -76,12 +70,12 @@ public class LoginUI
             public boolean getHash(Map<String, String> hash)
             {
                 if (!hash.get("user").equals(username))
-                    return true; // we didnt find the user, so we keep reading
+                    return true; // we didn't find the user, so we keep reading
 
                 if (!hash.get("password").equals(password))
                 {
                     Output.PopUpAlert(Lang.LoginFailMessage);
-                    return false; // we found the account but the password doesnt match, so we stopped the reading
+                    return false; // we found the account, but the password doesn't match, so we stopped the reading
                 }
                 Object client;
                 if(hash.containsKey("role") && hash.get("role").equals("admin"))
@@ -94,7 +88,7 @@ public class LoginUI
             }
 
             @Override
-            public void onComplete() // we didnt find the user or the password doesnt match
+            public void onComplete() // we didn't find the user or the password doesn't match
             {
                 Output.PopUpAlert(Lang.LoginFailMessage);
             }

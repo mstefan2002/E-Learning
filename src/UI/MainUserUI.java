@@ -18,27 +18,20 @@ public class MainUserUI
         welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
         welcomeLabel.setVerticalAlignment(JLabel.CENTER);
 
-
         JButton studentButton = new JButton(Lang.ManageProfileUserLabel);
         studentButton.setBounds(140, 80, 120, 30);
         studentButton.addActionListener(e ->
         {
-            if (e.getSource() == studentButton)
-            {
-                frame.dispose();
-                Controller.ShowProfileUI();
-            }
+            frame.dispose();
+            Controller.ShowProfileUI();
         });
 
         JButton chaptersButton = new JButton(Lang.ChaptersLabel);
         chaptersButton.setBounds(150, 120, 100, 30);
         chaptersButton.addActionListener(e ->
         {
-            if (e.getSource() == chaptersButton)
-            {
-                frame.dispose();
-                Controller.ShowChaptersUI();
-            }
+            frame.dispose();
+            Controller.ShowChaptersUI();
         });
         frame.add(welcomeLabel);
         frame.add(studentButton);

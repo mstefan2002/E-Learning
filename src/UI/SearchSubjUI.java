@@ -102,7 +102,7 @@ public class SearchSubjUI
             }
         });
     }
-    public void search()
+    private void search()
     {
         panel.removeAll();
         String aux = searchField.getText().toLowerCase();

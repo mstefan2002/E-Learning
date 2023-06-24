@@ -44,16 +44,13 @@ public class LessonUserUI
         testButton.setBounds(975, 50, 150, 50);
         testButton.addActionListener(e ->
         {
-            if (e.getSource() == testButton)
+            if(!user.getLesson(chapterName,idLesson))
             {
-                if(!user.getLesson(chapterName,idLesson))
-                {
-                    Output.PopUpAlert(Lang.LessonTestRequest);
-                    return;
-                }
-                frame.dispose();
-                Controller.ShowTestUserUI(idLesson, idChapter, lessonPage, chapterPage);
+                Output.PopUpAlert(Lang.LessonTestRequest);
+                return;
             }
+            frame.dispose();
+            Controller.ShowTestUserUI(idLesson, idChapter, lessonPage, chapterPage);
         });
         if(user.getTest(chapterName,idLesson)>0)
             testButton.setEnabled(false);
@@ -62,15 +59,12 @@ public class LessonUserUI
         readButton.setBounds(975, 100, 150, 50);
         readButton.addActionListener(e ->
         {
-            if (e.getSource() == readButton)
+            if(!user.setLesson(chapterName,idLesson))
             {
-                if(!user.setLesson(chapterName,idLesson))
-                {
-                    Output.PopUpAlert(Lang.GenericError);
-                    return;
-                }
-                readButton.setEnabled(false);
+                Output.PopUpAlert(Lang.GenericError);
+                return;
             }
+            readButton.setEnabled(false);
         });
         if(user.getLesson(chapterName,idLesson))
             readButton.setEnabled(false);
@@ -79,22 +73,13 @@ public class LessonUserUI
         printButton.setBounds(975, 150, 150, 50);
         printButton.addActionListener(e ->
         {
-            if (e.getSource() == printButton)
-            {
-                PrinterUtil print = new PrinterUtil(scrollPane);
-                print.printJEditorPane();
-            }
+            PrinterUtil print = new PrinterUtil(scrollPane);
+            print.printJEditorPane();
         });
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(975, 200, 150, 50);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-            {
-                frame.dispose();
-                Controller.ShowLessonListUserUI(idChapter, lessonPage, chapterPage);
-            }
-        });
+        backButton.addActionListener(e -> closeFrame(frame,idChapter, lessonPage, chapterPage));
+
         frame.add(printButton);
         frame.add(scrollPane);
         frame.add(readButton);
@@ -110,9 +95,13 @@ public class LessonUserUI
             @Override
             public void windowClosing(WindowEvent e)
             {
-                frame.dispose();
-                Controller.ShowLessonListUserUI(idChapter, lessonPage, chapterPage);
+                closeFrame(frame,idChapter, lessonPage, chapterPage);
             }
         });
+    }
+    private void closeFrame(JFrame frame,int idChapter,int lessonPage,int chapterPage)
+    {
+        frame.dispose();
+        Controller.ShowLessonListUserUI(idChapter, lessonPage, chapterPage);
     }
 }

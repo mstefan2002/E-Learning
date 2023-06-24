@@ -48,21 +48,10 @@ public class ProfileUI
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e ->
-        {
-            if (e.getSource() == backButton)
-            {
-                Controller.goBackDashboard(frame);
-            }
-        });
+        backButton.addActionListener(e -> Controller.goBackDashboard(frame));
+
         JButton saveButton = new JButton(Lang.Save);
-        saveButton.addActionListener(e ->
-        {
-            if (e.getSource() == saveButton)
-            {
-                saveEdit();
-            }
-        });
+        saveButton.addActionListener(e -> saveEdit());
 
         buttonPanel.add(backButton);
         buttonPanel.add(saveButton);
@@ -92,7 +81,7 @@ public class ProfileUI
             }
         });
     }
-    public void saveEdit()
+    private void saveEdit()
     {
         String name = nameField.getText();
         switch (Util.isValidName(name)) {
