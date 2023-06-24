@@ -129,12 +129,15 @@ public class LessonListUserUI
             @Override
             public void windowClosing(WindowEvent e)
             {
-                frame.dispose();
-                Controller.ShowChaptersUI(lastPage);
+                closeFrame();
             }
         });
     }
-
+    protected void closeFrame()
+    {
+        frame.dispose();
+        Controller.ShowChaptersUI(chapterPage);
+    }
     static class ButtonClickListener implements ActionListener
     {
         LessonListUserUI self;
@@ -148,10 +151,7 @@ public class LessonListUserUI
         {
             Object source = e.getSource();
             if (source == self.backButton)
-            {
-                self.frame.dispose();
-                Controller.ShowChaptersUI(self.chapterPage);
-            }
+                self.closeFrame();
             else if(source == self.prevButton)
             {
                 --self.currPage;
@@ -184,12 +184,12 @@ public class LessonListUserUI
             {
                 for (JButton element : self.myList)
                 {
-                    if (source == element)
-                    {
-                        self.frame.dispose();
-                        Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),self.idChapter,self.currPage,self.chapterPage);
-                        return;
-                    }
+                    if (source != element)
+                        continue;
+
+                    self.frame.dispose();
+                    Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),self.idChapter,self.currPage,self.chapterPage);
+                    return;
                 }
             }
         }

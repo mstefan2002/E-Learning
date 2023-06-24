@@ -63,12 +63,12 @@ public class AddLessonUI
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void closeFrame(int idChapter,int currPage,int chapterPage)
+    private void closeFrame(int idChapter,int currPage,int chapterPage)
     {
         frame.dispose();
         Controller.ShowLessonListAdminUI(idChapter, currPage, chapterPage);
     }
-    public void addLesson(int idChapter,int currPage,int chapterPage)
+    private void addLesson(int idChapter,int currPage,int chapterPage)
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())

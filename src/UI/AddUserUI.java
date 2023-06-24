@@ -70,7 +70,7 @@ public class AddUserUI
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void addUser()
+    private void addUser()
     {
         String user = userField.getText();
         switch(Util.isValidUserName(user))

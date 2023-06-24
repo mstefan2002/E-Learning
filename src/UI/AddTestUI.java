@@ -24,14 +24,14 @@ import java.util.List;
 
 public class AddTestUI
 {
-    protected final JTextField[] pointField;
-    protected final List<Subject> subjectList;
-    protected final JLabel totalpointLabel;
-    protected final JTextArea testField;
-    protected final JButton addButton,addSubjButton,backButton;
-    protected final JTextArea[] optionsField;
-    protected final int idLesson,idChapter,lessonPage,chapterPage;
-    protected final JFrame frame;
+    private final JTextField[] pointField;
+    private final List<Subject> subjectList;
+    private final JLabel totalpointLabel;
+    private final JTextArea testField;
+    private final JButton addButton,addSubjButton;
+    private final JTextArea[] optionsField;
+    private final int idLesson,idChapter,lessonPage,chapterPage;
+    private final JFrame frame;
     public AddTestUI(int idLesson,int idChapter, int lessonPage, int chapterPage)
     {
         this.idChapter = idChapter;
@@ -112,7 +112,7 @@ public class AddTestUI
         addSubjButton.setBounds(975, 120, 150, 50);
         addSubjButton.setEnabled(false);
 
-        backButton = new JButton(Lang.Cancel);
+        JButton backButton = new JButton(Lang.Cancel);
         backButton.setBounds(975, 170, 150, 50);
 
         addSubjButton.addActionListener(e -> {
@@ -141,7 +141,7 @@ public class AddTestUI
             }
         });
     }
-    public void closeFrame()
+    private void closeFrame()
     {
         frame.dispose();
         if(idLesson == 0)
@@ -149,7 +149,7 @@ public class AddTestUI
         else
             Controller.ShowLessonAdminUI(idLesson, idChapter,lessonPage,chapterPage);
     }
-    public void addTest()
+    private void addTest()
     {
         if(!addSubj())
             return;
@@ -245,7 +245,7 @@ public class AddTestUI
 
         totalpointLabel.setText(Lang.TotalPointsLabel.replace("{{$points}}",String.valueOf(totalPoint)).replace("{{$subjects}}",String.valueOf(subjectList.size())));
     }
-    public boolean checkEmpty()
+    private boolean checkEmpty()
     {
         if(testField.getText().trim().isEmpty())
         {
@@ -262,7 +262,7 @@ public class AddTestUI
         }
         return false;
     }
-    public boolean addSubj()
+    private boolean addSubj()
     {
         if(checkEmpty())
             return false;
@@ -288,7 +288,7 @@ public class AddTestUI
 
         return true;
     }
-    public void addSubject(Subject subj)
+    private void addSubject(Subject subj)
     {
         subjectList.add(subj);
     }

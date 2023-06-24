@@ -56,7 +56,7 @@ public class AddKeyWordUI
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void addWord(int idLesson,int idChapter, int lessonPage, int chapterPage, JFrame originalframe)
+    private void addWord(int idLesson,int idChapter, int lessonPage, int chapterPage, JFrame originalframe)
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())

@@ -52,7 +52,7 @@ public class AddChapterUI
         frame.setResizable(false);
         frame.setVisible(true);
     }
-    public void addChapter()
+    private void addChapter()
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())
