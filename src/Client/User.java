@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class User extends Client
 {
-    protected final Map<String,Integer> lessonsRead,testsResult;
+    private final Map<String,Integer> lessonsRead,testsResult;
     public User(String username, String name,String lastname,String email,int age)
     {
         super(username, name,lastname,email,age);
@@ -23,37 +23,37 @@ public class User extends Client
             final String chapterName = chapter.getName();
             final int szLesson=chapter.getLessonsSize();
             Map<Integer, Lesson> lessons = chapter.getLessons();
-            final FileHandler file = new FileHandler("data/"+chapterName+"_lessons/clients.txt");
+            final String fileName = "data/"+chapterName+"_lessons/clients.txt";
+            final FileHandler file = new FileHandler(fileName);
             file.read(new FileHandler.GetReadDataCallback()
             {
                 public boolean getHash(Map<String, String> hash)
                 {
                     if (!hash.get("user").equals(username)) // not our username, continue reading
                         return true;
-                    String key,less;
-                    int index;
+
                     for(int j=1;j<=szLesson;++j)
                     {
-                        index = lessons.get(j).getIndex(); // get lesson id
-                        key = index+"_lesson"; // make the key
-                        if(hash.containsKey(key))
+                        int index = lessons.get(j).getIndex();
+                        String key = index+"_lesson";
+                        if(hash.containsKey(key)) // we check if the user has read the lesson
                         {
-                            less = hash.get(key);
+                            String less = hash.get(key);
                             if(Util.isValidNumber(less) == 0)
                                 lessonsRead.put(chapterName+"_"+index, Integer.parseInt(less));
                         }
                         key = index+"_test";
-                        if(hash.containsKey(key))
+                        if(hash.containsKey(key)) // we check if the user has passed the test
                         {
-                            less = hash.get(key);
+                            String less = hash.get(key);
                             if(Util.isValidNumber(less) == 0)
                                 testsResult.put(chapterName+"_"+index, Integer.parseInt(less));
                         }
                     }
-                    key = "final_test";
-                    if(hash.containsKey(key))
+                    String key = "final_test";
+                    if(hash.containsKey(key)) // we check if the user has passed the final test
                     {
-                        less = hash.get(key);
+                        String less = hash.get(key);
                         if(Util.isValidNumber(less) == 0)
                             testsResult.put(chapterName+"_finaltest", Integer.parseInt(less));
                     }
@@ -62,25 +62,25 @@ public class User extends Client
                 @Override
                 public void onComplete()
                 {
-                    //we didnt find the account in the load file so we register it
+                    // we didn't find the account in the load file, so we will register it
                     Map<String,String> hashTemp = new HashMap<>();
                     hashTemp.put("user",username);
-                    file.write(hashTemp);
+                    if(!file.write(hashTemp))
+                        System.out.println("We encountered a problem while writing the user "+username+" in the load file "+fileName+".");
                 }
             });
         }
     }
     public int getTest(String name, int idLesson)
     {
-        String key;
         if(idLesson == 0)
         {
-            key = name+"_finaltest";
+            String key = name+"_finaltest";
             if(testsResult.containsKey(key))
                 return testsResult.get(key);
             return -1;
         }
-        key = name+"_"+idLesson;
+        String key = name+"_"+idLesson;
         if(testsResult.containsKey(key))
             return testsResult.get(key);
         return -1;
@@ -115,7 +115,7 @@ public class User extends Client
             hashMap.put(idLesson+"_test",String.valueOf(points));
         return file.edit("user",username,hashMap);
     }
-    public int getLessons(String name)
+    public int getLessons(String name) // get the total number of lessons read in the chapter
     {
         int i = 0;
         for (Map.Entry<String, Integer> entry : lessonsRead.entrySet())
