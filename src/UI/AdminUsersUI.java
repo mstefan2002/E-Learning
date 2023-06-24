@@ -46,14 +46,15 @@ public class AdminUsersUI
         {
             public boolean getHash(Map<String, String> hash)
             {
-                if (hash.get("user").equals(client.getUsername()))
-                    return true; // we dont want to show our account(admin)
+                String currentUserName = hash.get("user");
+                if (currentUserName.equals(client.getUsername()))
+                    return true; // we don't want to display our admin account
 
-                aux.append("<html><b>").append(hash.get("name")).append(" ").append(hash.get("lastname")).append("</b>(<font color='red'>@").append(hash.get("user"))
+                aux.append("<html><b>").append(hash.get("name")).append(" ").append(hash.get("lastname")).append("</b>(<font color='red'>@").append(currentUserName)
                         .append("</font>)<br>").append(hash.get("email")).append("</html>");
 
                 JButton profilButton = new JButton(aux.toString());
-                profilButton.setName(hash.get("user"));
+                profilButton.setName(currentUserName);
                 profilButton.setToolTipText(aux.toString());
                 profilButton.addActionListener(listener);
                 frame.add(profilButton);
@@ -129,30 +130,29 @@ public class AdminUsersUI
             {
                 for (JButton element : self.myList)
                 {
-                    if(source == element)
+                    if (source != element)
+                        continue;
+
+                    String userName = element.getName();
+                    FileHandler file = new FileHandler("data/clients.txt");
+                    file.read(new FileHandler.GetReadDataCallback()
                     {
-                        String buttonName = element.getName();
-                        FileHandler file = new FileHandler("data/clients.txt");
-                        file.read(new FileHandler.GetReadDataCallback()
+                        public boolean getHash(Map<String, String> hash)
                         {
-                            public boolean getHash(Map<String, String> hash)
-                            {
-                                if (!hash.get("user").equals(buttonName))
-                                    return true;
+                            if (!hash.get("user").equals(userName))
+                                return true;
 
-                                User client = new User(buttonName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
-                                Controller.ShowEditUserUI(self.frame,client,self.currPage);
-                                return false; // we found the account, stop the reading
-                            }
-
-                            @Override
-                            public void onComplete() // we didnt find the account
-                            {
-                                Output.PopUpAlert(Lang.UserDoesntExist);
-                            }
-                        });
-                        return;
-                    }
+                            User client = new User(userName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
+                            Controller.ShowEditUserUI(self.frame, client, self.currPage);
+                            return false; // we found the account, stop the reading
+                        }
+                        @Override
+                        public void onComplete() // we didn't find the account
+                        {
+                            Output.PopUpAlert(Lang.UserDoesntExist);
+                        }
+                    });
+                    return;
                 }
             }
         }
