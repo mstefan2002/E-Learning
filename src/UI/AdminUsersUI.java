@@ -14,11 +14,12 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.function.Function;
 
 public class AdminUsersUI
 {
     protected int itemsPerPage = 7;
-    protected JButton addButton,backButton,prevButton,nextPageButton;
+    protected JButton addButton,backButton;
     protected JFrame frame;
     protected LinkedList<JButton> myList;
     protected int currPage;
@@ -77,15 +78,8 @@ public class AdminUsersUI
         frame.add(backButton);
         frame.add(addButton);
 
-        int i =0;
-        for (JButton element : myList)
-        {
-            element.setBounds(0, (i%itemsPerPage)*50, 400, 50);
-            ++i;
-        }
-        prevButton = new JButton(Lang.PrevButton);
-        nextPageButton = new JButton(Lang.NextButton);
-        Pagination.start(myList,prevButton, nextPageButton, curPage,frame,listener,itemsPerPage);
+        Function<Integer,Integer> func = (x) -> (currPage+=x);
+        Pagination.start(myList,curPage,frame,itemsPerPage,func,0,0,400,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -100,7 +94,6 @@ public class AdminUsersUI
             }
         });
     }
-
     static class ButtonClickListener implements ActionListener
     {
         AdminUsersUI self;
@@ -116,16 +109,6 @@ public class AdminUsersUI
                 Controller.AddUserUI(self.frame);
             else if(source == self.backButton)
                 Controller.goBackDashboard(self.frame);
-            else if(source == self.prevButton)
-            {
-                --self.currPage;
-                Pagination.prev(self.myList,self.itemsPerPage,self.currPage,self.prevButton, self.nextPageButton);
-            }
-            else if(source == self.nextPageButton)
-            {
-                ++self.currPage;
-                Pagination.next(self.myList,self.itemsPerPage,self.currPage,self.prevButton, self.nextPageButton);
-            }
             else
             {
                 for (JButton element : self.myList)

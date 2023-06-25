@@ -13,11 +13,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.function.Function;
 
 public class LessonListAdminUI
 {
     protected final int itemsPerPage = 12;
-    protected JButton addButton, backButton, prevButton, nextPageButton,editButton,testButton;
+    protected JButton addButton, backButton, editButton,testButton;
     protected JFrame frame;
     protected LinkedList<JButton> myList;
     protected int currPage,chapterPage,idChapter;
@@ -89,14 +90,8 @@ public class LessonListAdminUI
         frame.add(addButton);
         frame.add(editButton);
 
-        int i = 0;
-        for (JButton element : myList) {
-            element.setBounds(0, (i % itemsPerPage) * 50, 800, 50);
-            ++i;
-        }
-        prevButton = new JButton(Lang.PrevButton);
-        nextPageButton = new JButton(Lang.NextButton);
-        Pagination.start(myList,prevButton, nextPageButton, currPage,frame,listener,itemsPerPage);
+        Function<Integer,Integer> func = (x) -> (this.currPage+=x);
+        Pagination.start(myList,currPage,frame,itemsPerPage,func,0,0,800,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -137,16 +132,6 @@ public class LessonListAdminUI
                 Controller.ShowEditChapterUI(self.frame,self.idChapter,self.currPage,self.chapterPage);
             else if (source == self.backButton)
                 self.closeFrame();
-            else if(source == self.prevButton)
-            {
-                --self.currPage;
-                Pagination.prev(self.myList,self.itemsPerPage,self.currPage,self.prevButton, self.nextPageButton);
-            }
-            else if(source == self.nextPageButton)
-            {
-                ++self.currPage;
-                Pagination.next(self.myList,self.itemsPerPage,self.currPage,self.prevButton, self.nextPageButton);
-            }
             else if(source == self.testButton)
             {
                 if(!Controller.getChapters().get(self.idChapter).hasTest())

@@ -11,12 +11,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.function.Function;
 
 
 public class ChaptersAdminUI
 {
     protected final int itemsPerPage = 12;
-    protected JButton addButton,backButton,prevButton,nextPageButton;
+    protected JButton addButton,backButton;
     protected JFrame frame;
     protected LinkedList<JButton> myList;
     protected int currPage;
@@ -33,6 +34,7 @@ public class ChaptersAdminUI
 
     private void startUI(int curPage)
     {
+        currPage=curPage;
         frame = new JFrame(Lang.ManagerChaptersTitle);
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -68,15 +70,8 @@ public class ChaptersAdminUI
         frame.add(backButton);
         frame.add(addButton);
 
-        int i = 0;
-        for (JButton element : myList)
-        {
-            element.setBounds(0, (i % itemsPerPage) * 50, 800, 50);
-            ++i;
-        }
-        prevButton = new JButton(Lang.PrevButton);
-        nextPageButton = new JButton(Lang.NextButton);
-        Pagination.start(myList,prevButton, nextPageButton, curPage,frame,listener,itemsPerPage);
+        Function<Integer,Integer> func = (x) -> (currPage+=x);
+        Pagination.start(myList,curPage,frame,itemsPerPage,func,0,0,800,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -110,16 +105,6 @@ public class ChaptersAdminUI
                 Controller.ShowAddChapterUI(self.frame);
             else if (source == self.backButton)
                 Controller.goBackDashboard(self.frame);
-            else if(source == self.prevButton)
-            {
-                --self.currPage;
-                Pagination.prev(self.myList,self.itemsPerPage,self.currPage,self.prevButton, self.nextPageButton);
-            }
-            else if(source == self.nextPageButton)
-            {
-                ++self.currPage;
-                Pagination.next(self.myList,self.itemsPerPage,self.currPage,self.prevButton, self.nextPageButton);
-            }
             else
             {
                 for (JButton element : self.myList)
