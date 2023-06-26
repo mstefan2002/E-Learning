@@ -17,7 +17,6 @@ import java.util.function.Function;
 public class ChapterUI
 {
     private JFrame frame;
-    private LinkedList<JButton> myList;
     private int currPage;
     public ChapterUI()
     {
@@ -36,7 +35,7 @@ public class ChapterUI
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        myList = new LinkedList<>();
+        LinkedList<JButton> myList = new LinkedList<>();
 
         User user = (User)Controller.getClient();
         Map<Integer,Chapter> chapters = Controller.getChapters();
@@ -84,14 +83,8 @@ public class ChapterUI
     }
     private void pressChapter(ActionEvent e)
     {
-        Object source = e.getSource();
-        for (JButton element : myList)
-        {
-            if (source != element)
-                continue;
-            frame.dispose();
-            Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),currPage);
-            return;
-        }
+        JButton element = (JButton) e.getSource();
+        frame.dispose();
+        Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),currPage);
     }
 }

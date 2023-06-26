@@ -139,8 +139,7 @@ public class SearchSubjUI
     }
     private void pressSubject(ActionEvent e)
     {
-        Object source = e.getSource();
-        JButton button = (JButton)source;
+        JButton button = (JButton) e.getSource();
         Controller.ShowEditSubjectUI(button.getClientProperty("parent"),(int)button.getClientProperty("idSubject"));
         frame.dispose();
     }

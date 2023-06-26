@@ -18,7 +18,6 @@ import java.util.function.Function;
 public class AdminUsersUI
 {
     private JFrame frame;
-    private LinkedList<JButton> myList;
     private int currPage;
     public AdminUsersUI(Admin client)
     {
@@ -36,7 +35,7 @@ public class AdminUsersUI
         frame.setSize(600, 500);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        myList = new LinkedList<>();
+        LinkedList<JButton> myList = new LinkedList<>();
 
         FileHandler file = new FileHandler("data/clients.txt");
         file.read(new FileHandler.GetReadDataCallback()
@@ -92,32 +91,25 @@ public class AdminUsersUI
     }
     private void pressButton(ActionEvent e)
     {
-        Object source = e.getSource();
-        for (JButton element : myList)
+        JButton element = (JButton) e.getSource();
+        String userName = element.getName();
+        FileHandler file = new FileHandler("data/clients.txt");
+        file.read(new FileHandler.GetReadDataCallback()
         {
-            if (source != element)
-                continue;
-
-            String userName = element.getName();
-            FileHandler file = new FileHandler("data/clients.txt");
-            file.read(new FileHandler.GetReadDataCallback()
+            public boolean getHash(Map<String, String> hash)
             {
-                public boolean getHash(Map<String, String> hash)
-                {
-                    if (!hash.get("user").equals(userName))
-                        return true;
+                if (!hash.get("user").equals(userName))
+                    return true;
 
-                    User client = new User(userName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
-                    Controller.ShowEditUserUI(frame, client, currPage);
-                    return false; // we found the account, stop the reading
-                }
-                @Override
-                public void onComplete() // we didn't find the account
-                {
-                    Output.PopUpAlert(Lang.UserDoesntExist);
-                }
-            });
-            return;
-        }
+                User client = new User(userName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
+                Controller.ShowEditUserUI(frame, client, currPage);
+                return false; // we found the account, stop the reading
+            }
+            @Override
+            public void onComplete() // we didn't find the account
+            {
+                Output.PopUpAlert(Lang.UserDoesntExist);
+            }
+        });
     }
 }

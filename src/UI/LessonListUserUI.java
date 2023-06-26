@@ -19,7 +19,6 @@ import java.util.function.Function;
 public class LessonListUserUI
 {
     private JFrame frame;
-    private LinkedList<JButton> myList;
     private int currPage,chapterPage,idChapter;
     public LessonListUserUI(int idChapter, int lastPage)
     {
@@ -44,7 +43,7 @@ public class LessonListUserUI
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        myList = new LinkedList<>();
+        LinkedList<JButton> myList = new LinkedList<>();
 
         User user = (User)Controller.getClient();
         Map<Integer,Lesson> lessons = chapter.getLessons();
@@ -131,16 +130,9 @@ public class LessonListUserUI
     }
     private void pressLesson(ActionEvent e)
     {
-        Object source = e.getSource();
-        for (JButton element : myList)
-        {
-            if (source != element)
-                continue;
-
-            frame.dispose();
-            Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),idChapter,currPage,chapterPage);
-            return;
-        }
+        JButton element = (JButton) e.getSource();
+        frame.dispose();
+        Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),idChapter,currPage,chapterPage);
     }
     private void pressTest()
     {
