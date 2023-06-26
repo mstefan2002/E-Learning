@@ -4,9 +4,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.*;
+import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import Controller.*;
+import Learn.Chapter;
 import Util.Output;
 import Lang.Lang;
 
@@ -58,16 +60,16 @@ public class EditChapterUI
             Output.PopUpAlert(Lang.EmptyChapterNameField);
             return;
         }
-
-        for (int i = 1,szChapter = Controller.getChapters().size(); i <= szChapter; ++i)
+        Map<Integer, Chapter> chapters = Controller.getChapters();
+        for (int i = 1,szChapter = chapters.size(); i <= szChapter; ++i)
         {
-            if(i == idChapter   ||    !Controller.getChapters().get(i).getName().equals(name))
+            if(i == idChapter   ||    !chapters.get(i).getName().equals(name))
                 continue;
 
             Output.PopUpAlert(Lang.ChapterAlreadyExists);
             return;
         }
-        Controller.getChapters().get(idChapter).setName(name);
+        chapters.get(idChapter).setName(name);
         frame.dispose();
         originFrame.dispose();
         Controller.ShowLessonListAdminUI(idChapter,chapterPage,lessonPage);

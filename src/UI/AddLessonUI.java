@@ -112,8 +112,8 @@ public class AddLessonUI
         }
 
         Lesson lesson = new Lesson(idChapter,path,safename);
-        Controller.getChapters().get(idChapter).getLessons().put(szLesson,lesson);
-        Controller.getChapters().get(idChapter).getLessons().get(szLesson).init();
+        hashMapLessons.put(szLesson,lesson);
+        hashMapLessons.get(szLesson).init();
 
         Output.PopUp(Lang.SuccessAddLesson);
         closeFrame(idChapter,currPage,chapterPage);

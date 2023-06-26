@@ -74,13 +74,15 @@ public class EditUserUI
         panelTests.setLayout(new GridLayout(0,1));
         panelTests.setSize(300,400);
 
-        for(int it=1,szChapter=Controller.getChapters().size();it<=szChapter;++it)
+        Map<Integer,Chapter> chapters = Controller.getChapters();
+        for(int it=1,szChapter=chapters.size();it<=szChapter;++it)
         {
-            Chapter chapter = Controller.getChapters().get(it);
+            Chapter chapter = chapters.get(it);
             String chapterName = chapter.getName();
-            for (int i = 1,szLesson=chapter.getLessonsSize(); i <= szLesson; ++i)
+            Map<Integer,Lesson> lessons = chapter.getLessons();
+            for (int i = 1,szLesson=lessons.size(); i <= szLesson; ++i)
             {
-                Lesson lesson = chapter.getLessons().get(i);
+                Lesson lesson = lessons.get(i);
                 if (lesson.hasTest())
                     panelTests.add(addTest(chapterName,i,lesson.getTest().getTotalPoints(),lesson.getName()));
             }

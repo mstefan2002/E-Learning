@@ -26,7 +26,7 @@ public class TestUserUI
     private final Map<Integer,List<String>> choiseField;
     private final int idLesson,idChapter,lessonPage,chapterPage;
     private final JFrame frame;
-    private final Test test;
+    private final List<Subject> subjects;
     private int currSubj = 0,modeTest = 0;
     private Subject subj;
     public TestUserUI(int idLesson,int idChapter, int lessonPage, int chapterPage)
@@ -38,11 +38,13 @@ public class TestUserUI
 
         choiseField = new HashMap<>();
         Chapter chapter = Controller.getChapters().get(idChapter);
+        Test test;
         if(idLesson == 0)
             test = chapter.getFinalTest();
         else
             test = chapter.getLessons().get(idLesson).getTest();
 
+        subjects = test.getSubjects();
         frame = new JFrame(Lang.TestTitle);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.getContentPane().setBackground(Color.GRAY);
@@ -52,7 +54,7 @@ public class TestUserUI
         JLabel testLabel = new JLabel(Lang.TestLabel);
         testLabel.setBounds(20, 20, 200, 30);
 
-        subj = test.getSubjects().get(currSubj);
+        subj = subjects.get(currSubj);
         testField = new JEditorPane("text/html",getEnunt());
         testField.setOpaque(false);
         testField.setEditable(false);
@@ -66,11 +68,12 @@ public class TestUserUI
         Map<String,Integer> options = subj.getOptions();
         for (HashMap.Entry<String, Integer> entry : options.entrySet())
         {
+            String key = entry.getKey();
             int yPos = (130*i);
             JLabel aLabel = new JLabel(Lang.TestOptionLabel.replace("{{$id}}",String.valueOf(i+1)));
             aLabel.setBounds(20, 150+yPos, 200, 30);
 
-            optionsField[i] = new JEditorPane("text/html", Lang.TestOptionContentLabel.replace("{{$var}}",replaceToHtml(entry.getKey())));
+            optionsField[i] = new JEditorPane("text/html", Lang.TestOptionContentLabel.replace("{{$var}}",replaceToHtml(key)));
             optionsField[i].setOpaque(false);
             optionsField[i].setEditable(false);
 
@@ -80,7 +83,7 @@ public class TestUserUI
 
             checkBox[i] = new JCheckBox();
             checkBox[i].setBounds(20, 250+yPos, 25, 30);
-            checkBox[i].setName(entry.getKey());
+            checkBox[i].setName(key);
             checkBox[i].setBackground(null);
 
             frame.add(scrollOptions);
@@ -88,7 +91,7 @@ public class TestUserUI
             frame.add(checkBox[i]);
             ++i;
         }
-        int szSubject = test.getSubjects().size();
+        int szSubject = subjects.size();
         totalpointLabel = new JLabel(Lang.CurrentSubjectLabel.replace("{{$totalSubj}}",String.valueOf(szSubject)).replace("{{$currSubj}}","1"));
         totalpointLabel.setBounds(975, 20, 150, 50);
 
@@ -126,11 +129,11 @@ public class TestUserUI
     }
     private void nextSubj()
     {
-        int szSubject1 = test.getSubjects().size();
+        int szSubject = subjects.size();
         if (modeTest == 1)
         {
             ++currSubj;
-            if (currSubj == szSubject1)
+            if (currSubj == szSubject)
             {
                 closeFrame();
                 return;
@@ -138,7 +141,7 @@ public class TestUserUI
 
             updateUI();
             updateModeUI();
-            if (currSubj + 1 == szSubject1)
+            if (currSubj + 1 == szSubject)
                 nextButton.setText(Lang.ExitLabel);
 
             return;
@@ -150,7 +153,7 @@ public class TestUserUI
                 listOps.add(checkBox[it].getName());
 
         choiseField.put(currSubj, listOps);
-        if (currSubj + 1 != szSubject1)
+        if (currSubj + 1 != szSubject)
         {
             ++currSubj;
             updateUI();
@@ -160,9 +163,9 @@ public class TestUserUI
         modeTest = 1;
         int totalPoints = 0, userPoints = 0;
 
-        for (int it = 0; it < szSubject1; ++it)
+        for (int it = 0; it < szSubject; ++it)
         {
-            Map<String, Integer> hashMapOp = test.getSubjects().get(it).getOptions();
+            Map<String, Integer> hashMapOp = subjects.get(it).getOptions();
             int userCurrPoints = 0;
 
             boolean anyWrong = false;
@@ -170,10 +173,12 @@ public class TestUserUI
             List<String> listCh = choiseField.get(it);
             for (HashMap.Entry<String, Integer> entry : hashMapOp.entrySet())
             {
+                String key = entry.getKey();
                 int val = entry.getValue();
                 totalPoints += val;
-                for (String aux : listCh) {
-                    if (!aux.equals(entry.getKey()))
+                for (String aux : listCh)
+                {
+                    if (!aux.equals(key))
                         continue;
 
                     if (val == 0)
@@ -182,6 +187,8 @@ public class TestUserUI
                         userCurrPoints += val;
                     break;
                 }
+                if(anyWrong) // we already found that he has a wrong answer, so we skip the other options
+                    break;
             }
             if (!anyWrong)
                 userPoints += userCurrPoints;
@@ -210,58 +217,53 @@ public class TestUserUI
     }
     protected void updateUI()
     {
-        subj = test.getSubjects().get(currSubj);
+        int szSubject = subjects.size();
+        subj = subjects.get(currSubj);
         testField.setText(getEnunt());
         Map<String, Integer> options = subj.getOptions();
         int i = 0;
         for (HashMap.Entry<String, Integer> entry : options.entrySet())
         {
-            optionsField[i].setText(Lang.TestOptionContentLabel.replace("{{$var}}",replaceToHtml(entry.getKey())));
+            String key = entry.getKey();
+            optionsField[i].setText(Lang.TestOptionContentLabel.replace("{{$var}}",replaceToHtml(key)));
             checkBox[i].setSelected(false);
-            checkBox[i].setName(entry.getKey());
+            checkBox[i].setName(key);
             checkBox[i].setBackground(null);
             i++;
         }
 
-        totalpointLabel.setText(Lang.CurrentSubjectLabel.replace("{{$totalSubj}}",String.valueOf(test.getSubjects().size())).replace("{{$currSubj}}",String.valueOf(currSubj+1)));
-        if (currSubj + 1 == test.getSubjects().size())
+        totalpointLabel.setText(Lang.CurrentSubjectLabel.replace("{{$totalSubj}}",String.valueOf(szSubject)).replace("{{$currSubj}}",String.valueOf(currSubj+1)));
+        if (currSubj + 1 == szSubject)
             nextButton.setText(Lang.SendTestLabel);
     }
     protected void updateModeUI()
     {
         for (HashMap.Entry<String, Integer> entry : subj.getOptions().entrySet())
         {
-            for (String aux : choiseField.get(currSubj))
+            String key = entry.getKey();
+            int value = entry.getValue();
+            Color color = Color.GREEN;
+            if(value == 0)
+                color = Color.RED;
+
+            for (int i = 0; i < 4; ++i)
             {
-                if (!aux.equals(entry.getKey()))
+                if (!checkBox[i].getName().equals(key))
                     continue;
 
-                if (entry.getValue() == 0)
+                for (String aux : choiseField.get(currSubj))
                 {
-                    for (int i = 0; i < 4; ++i)
-                    {
-                        if (!checkBox[i].getName().equals(entry.getKey()))
-                            continue;
-
-                        checkBox[i].setBackground(Color.RED);
-                        checkBox[i].setSelected(true);
-                    }
-                    continue;
-                }
-                for (int i = 0; i < 4; ++i)
-                {
-                    if (!checkBox[i].getName().equals(entry.getKey()))
+                    if (!aux.equals(key))
                         continue;
 
-                    checkBox[i].setBackground(Color.GREEN);
+                    checkBox[i].setBackground(color);
                     checkBox[i].setSelected(true);
+                    break;
                 }
-            }
-            for(int i=0;i<4;++i)
-                if(checkBox[i].getName().equals(entry.getKey()) &&
-                        entry.getValue() > 0 && checkBox[i].getBackground() != Color.GREEN && checkBox[i].getBackground() != Color.RED)
+                if(value > 0 && !checkBox[i].isSelected())
                     checkBox[i].setBackground(Color.GREEN);
+                break;
+            }
         }
-
     }
 }

@@ -7,20 +7,18 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
 
 
 public class ChaptersAdminUI
 {
-    protected final int itemsPerPage = 12;
-    protected JButton addButton,backButton;
-    protected JFrame frame;
-    protected LinkedList<JButton> myList;
-    protected int currPage;
+    private JFrame frame;
+    private LinkedList<JButton> myList;
+    private int currPage;
 
     public ChaptersAdminUI()
     {
@@ -38,20 +36,20 @@ public class ChaptersAdminUI
         frame = new JFrame(Lang.ManagerChaptersTitle);
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        ButtonClickListener listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
 
-        for (int i = 1,szChapter = Controller.getChapters().size(); i <= szChapter; ++i)
+        Map<Integer,Chapter> chapters = Controller.getChapters();
+        for (int i = 1,szChapter = chapters.size(); i <= szChapter; ++i)
         {
-            Chapter chapter = Controller.getChapters().get(i);
+            Chapter chapter = chapters.get(i);
             String aux = Lang.ChapterAdminButton.replace("{{$countTests}}",String.valueOf(chapter.getTestsSize()))
                                          .replace("{{$countLessons}}",String.valueOf(chapter.getLessonsSize()))
                                          .replace("{{$chapterName}}",chapter.getName());
             JButton chapterButton = new JButton(aux);
             chapterButton.setName(String.valueOf(i));
             chapterButton.setToolTipText(aux);
-            chapterButton.addActionListener(listener);
+            chapterButton.addActionListener(this::pressChapter);
 
             frame.add(chapterButton);
             chapterButton.setVisible(false);
@@ -59,19 +57,19 @@ public class ChaptersAdminUI
         }
 
 
-        addButton = new JButton(Lang.AddChapterField);
-        addButton.addActionListener(listener);
+        JButton addButton = new JButton(Lang.AddChapterField);
+        addButton.addActionListener(e -> Controller.ShowAddChapterUI(frame));
         addButton.setBounds(825, 0, 150, 50);
 
-        backButton = new JButton(Lang.Back);
-        backButton.addActionListener(listener);
+        JButton backButton = new JButton(Lang.Back);
+        backButton.addActionListener(e -> Controller.goBackDashboard(frame));
         backButton.setBounds(825, 50, 150, 50);
 
         frame.add(backButton);
         frame.add(addButton);
 
         Function<Integer,Integer> func = (x) -> (currPage+=x);
-        Pagination.start(myList,curPage,frame,itemsPerPage,func,0,0,800,50);
+        Pagination.start(myList,curPage,frame, 12,func,0,0,800,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -86,36 +84,16 @@ public class ChaptersAdminUI
             }
         });
     }
-
-    static class ButtonClickListener implements ActionListener
+    private void pressChapter(ActionEvent e)
     {
-        private final ChaptersAdminUI self;
-
-        public ButtonClickListener(ChaptersAdminUI self)
+        Object source = e.getSource();
+        for (JButton element : myList)
         {
-            this.self = self;
-        }
-
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            Object source = e.getSource();
-            if (source == self.addButton)
-                Controller.ShowAddChapterUI(self.frame);
-            else if (source == self.backButton)
-                Controller.goBackDashboard(self.frame);
-            else
-            {
-                for (JButton element : self.myList)
-                {
-                    if (source != element)
-                        continue;
-                    self.frame.dispose();
-                    Controller.ShowLessonListAdminUI(Integer.parseInt(element.getName()),self.currPage);
-                    return;
-                }
-            }
+            if (source != element)
+                continue;
+            frame.dispose();
+            Controller.ShowLessonListAdminUI(Integer.parseInt(element.getName()),currPage);
+            return;
         }
     }
 }

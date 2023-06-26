@@ -9,6 +9,7 @@ import java.awt.*;
 
 import Lang.Lang;
 import Learn.Chapter;
+import Learn.Lesson;
 import Learn.Subject;
 import Learn.Test;
 import Util.Output;
@@ -154,19 +155,21 @@ public class AddTestUI
         if(!addSubj())
             return;
 
-        Map<String, String> hashMapTest = new HashMap<>();
         Chapter chapter = Controller.getChapters().get(idChapter);
+        Lesson lesson = null;
         String safename;
         if(idLesson == 0)
             safename = "finaltest.txt";
         else
-            safename = chapter.getLessons().get(idLesson).getFileName();
-
+        {
+            lesson = chapter.getLessons().get(idLesson);
+            safename = lesson.getFileName();
+        }
         FileHandler file = new FileHandler("data/"+chapter.getName() + "_tests/" + safename);
 
         for (Subject obj : subjectList)
         {
-            hashMapTest.clear();
+            Map<String, String> hashMapTest = new HashMap<>();
             Map<String,Integer> hashMap = obj.getOptions();
             for (Map.Entry<String,Integer> entry : hashMap.entrySet())
                 hashMapTest.put(entry.getKey(),String.valueOf(entry.getValue()));
@@ -183,13 +186,13 @@ public class AddTestUI
         if(idLesson == 0)
         {
             Test test = new Test(idChapter, -1);
-            Controller.getChapters().get(idChapter).setTest(test);
+            chapter.setTest(test);
             Controller.ShowLessonListAdminUI(idChapter, lessonPage, chapterPage);
         }
         else
         {
             Test test = new Test(idChapter,idLesson);
-            Controller.getChapters().get(idChapter).getLessons().get(idLesson).setTest(test);
+            lesson.setTest(test);
             Controller.ShowLessonAdminUI(idLesson, idChapter,lessonPage,chapterPage);
         }
 
@@ -254,11 +257,11 @@ public class AddTestUI
         }
         for(int i=0;i<4;i++)
         {
-            if(optionsField[i].getText().trim().isEmpty())
-            {
-                Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
-                return true;
-            }
+            if(!optionsField[i].getText().trim().isEmpty())
+                continue;
+
+            Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
+            return true;
         }
         return false;
     }

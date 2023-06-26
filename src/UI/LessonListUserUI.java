@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
 
 public class LessonListUserUI
@@ -52,9 +53,10 @@ public class LessonListUserUI
         myList = new LinkedList<>();
 
         User user = (User)Controller.getClient();
-        for (int i = 1,szLesson=chapter.getLessonsSize(); i <= szLesson; ++i)
+        Map<Integer,Lesson> lessons = chapter.getLessons();
+        for (int i = 1,szLesson=lessons.size(); i <= szLesson; ++i)
         {
-            Lesson lesson = chapter.getLessons().get(i);
+            Lesson lesson = lessons.get(i);
             String aux = Lang.LessonUserLabel.replace("{{$lessonName}}",lesson.getName());
             if(lesson.hasTest())
             {

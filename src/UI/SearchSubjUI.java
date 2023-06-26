@@ -3,6 +3,7 @@ package UI;
 import Controller.Controller;
 import Learn.Chapter;
 import Learn.Lesson;
+import Learn.Subject;
 import Learn.Test;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -13,8 +14,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import Lang.Lang;
-import Util.Util;
+
 public class SearchSubjUI
 {
     protected JButton backButton;
@@ -56,26 +60,20 @@ public class SearchSubjUI
         myList = new LinkedList<>();
         panel = new JPanel();
 
-        for (int i = 1,szChapter = Controller.getChapters().size(); i <= szChapter; ++i)
+        Map<Integer,Chapter> chapters = Controller.getChapters();
+        for (int i = 1,szChapter = chapters.size(); i <= szChapter; ++i)
         {
-            Chapter chapter = Controller.getChapters().get(i);
-            for(int j=1,szLesson=chapter.getLessonsSize();j<=szLesson;++j)
+            Chapter chapter = chapters.get(i);
+            Map<Integer,Lesson> lessons = chapter.getLessons();
+            for(int j=1,szLesson=lessons.size();j<=szLesson;++j)
             {
-                Lesson lesson = chapter.getLessons().get(j);
+                Lesson lesson = lessons.get(j);
                 if(lesson.hasTest())
-                {
-                    Test test = lesson.getTest();
-                    for (int w=0,szSubject = test.getSubjects().size();w<szSubject;++w)
-                        addSubj(i,j,w);
-                }
+                    addSubj(lesson);
             }
             if(chapter.hasTest())
-            {
-                for (int w=0,szSubject = chapter.getFinalTest().getSubjects().size();w<szSubject;w++)
-                    addSubj(i,0,w);
-            }
+                addSubj(chapter);
         }
-
 
         backButton = new JButton(Lang.Back);
         backButton.addActionListener(listener);
@@ -112,29 +110,36 @@ public class SearchSubjUI
 
         panel.updateUI();
     }
-    private void addSubj(int idChapter,int idLesson,int idSubject)
+    private void addSubj(Object obj)
     {
-        Chapter chapter = Controller.getChapters().get(idChapter);
-        String subjectName,parentName;
-        if(idLesson == 0)
+        Test test;
+        String parentName;
+        if(obj instanceof Chapter chapter)
         {
-            subjectName = chapter.getFinalTest().getSubjects().get(idSubject).getEnunt();
+            test = chapter.getFinalTest();
             parentName = chapter.getName();
         }
         else
         {
-            Lesson lesson = chapter.getLessons().get(idLesson);
-            subjectName = lesson.getTest().getSubjects().get(idSubject).getEnunt();
+            Lesson lesson = (Lesson)obj;
+            test = lesson.getTest();
             parentName = lesson.getName();
         }
-        String aux = Lang.SubjectLabel.replace("{{$subjectName}}",subjectName).replace("{{$parentName}}",parentName);
 
-        JButton chapterButton = new JButton(aux);
-        chapterButton.setName(idChapter+" "+idLesson+" "+idSubject);
-        chapterButton.setToolTipText(aux);
-        chapterButton.addActionListener(listener);
-        panel.add(chapterButton);
-        myList.add(chapterButton);
+        List<Subject> subjects = test.getSubjects();
+        String subjectLabel = Lang.SubjectLabel.replace("{{$parentName}}", parentName);
+        for (int i=0,szSubject = subjects.size();i<szSubject;++i)
+        {
+            String aux = subjectLabel.replace("{{$subjectName}}", subjects.get(i).getEnunt());
+
+            JButton chapterButton = new JButton(aux);
+            chapterButton.putClientProperty("parent",obj);
+            chapterButton.putClientProperty("idSubject",i);
+            chapterButton.setToolTipText(aux);
+            chapterButton.addActionListener(listener);
+            panel.add(chapterButton);
+            myList.add(chapterButton);
+        }
     }
     static class ButtonClickListener implements ActionListener
     {
@@ -152,15 +157,8 @@ public class SearchSubjUI
                 Controller.goBackDashboard(self.frame);
             else
             {
-                String[] aux = ((JButton) source).getName().split(" ");
-                int idChapter = 0,idLesson =0,idSubject =0;
-                if(Util.isValidNumber(aux[0]) == 0)
-                    idChapter = Integer.parseInt(aux[0]);
-                if(Util.isValidNumber(aux[1]) == 0)
-                    idLesson = Integer.parseInt(aux[1]);
-                if(Util.isValidNumber(aux[2]) == 0)
-                    idSubject = Integer.parseInt(aux[2]);
-                Controller.ShowEditSubjectUI(idChapter,idLesson,idSubject);
+                JButton button = (JButton)source;
+                Controller.ShowEditSubjectUI(button.getClientProperty("parent"),(int)button.getClientProperty("idSubject"));
                 self.frame.dispose();
             }
         }

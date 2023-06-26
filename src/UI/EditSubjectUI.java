@@ -1,8 +1,7 @@
 package UI;
 
 import Controller.Controller;
-import Learn.Subject;
-import Learn.Test;
+import Learn.*;
 import Util.Util;
 
 import javax.swing.*;
@@ -17,6 +16,7 @@ import Lang.Lang;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EditSubjectUI
@@ -27,20 +27,24 @@ public class EditSubjectUI
     private final JTextArea[] optionsField;
     private final JTextField[] pointField;
     private final JButton saveButton;
-    private final int idChapter,idLesson,idSubject;
+    private final int idSubject;
     private final Subject subj;
     private final Test test;
-    public EditSubjectUI(int idChapter,int idLesson,int idSubject)
+    private Chapter chapter=null;
+    private Lesson lesson=null;
+    public EditSubjectUI(Object parent,int idSubject)
     {
-        this.idChapter = idChapter;
-        this.idLesson = idLesson;
         this.idSubject = idSubject;
-
-        if(idLesson == 0)
-            test = Controller.getChapters().get(idChapter).getFinalTest();
+        if(parent instanceof Chapter)
+        {
+            chapter = (Chapter) parent;
+            test = chapter.getFinalTest();
+        }
         else
-            test = Controller.getChapters().get(idChapter).getLessons().get(idLesson).getTest();
-
+        {
+            lesson = (Lesson)parent;
+            test = lesson.getTest();
+        }
         subj = test.getSubjects().get(idSubject);
 
         frame = new JFrame(Lang.EditSubjectTitle);
@@ -185,31 +189,20 @@ public class EditSubjectUI
             Output.PopUpAlert(Lang.GenericError);
             return;
         }
-        boolean deleteTest = false;
-        if (idLesson == 0)
+        List<Subject> subjects = test.getSubjects();
+        subjects.remove(idSubject);
+        if (subjects.isEmpty())
         {
-            Controller.getChapters().get(idChapter).getFinalTest().getSubjects().remove(idSubject);
-            if (Controller.getChapters().get(idChapter).getFinalTest().getSubjects().size() == 0)
-            {
-                Controller.getChapters().get(idChapter).setTest(null);
-                deleteTest = true;
-            }
-        }
-        else
-        {
-            Controller.getChapters().get(idChapter).getLessons().get(idLesson).getTest().getSubjects().remove(idSubject);
-            if (Controller.getChapters().get(idChapter).getLessons().get(idLesson).getTest().getSubjects().size() == 0)
-            {
-                Controller.getChapters().get(idChapter).getLessons().get(idLesson).setTest(null);
-                deleteTest = true;
-            }
-        }
-        if(deleteTest)
-        {
+            if (chapter != null)
+                chapter.setTest(null);
+            else
+                lesson.setTest(null);
+
             File fileTest = new File(test.getPath());
             if (fileTest.delete())
                 Output.PopUp(Lang.EmptyTestDeleted);
         }
+
         Output.PopUp(Lang.SuccessDeletingSubject);
         closeFrame();
     }
@@ -223,11 +216,11 @@ public class EditSubjectUI
         }
         for (int i = 0; i < 4; i++)
         {
-            if (optionsField[i].getText().trim().isEmpty())
-            {
-                Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
-                return;
-            }
+            if (!optionsField[i].getText().trim().isEmpty())
+                continue;
+
+            Output.PopUpAlert(Lang.EmptyOptionField.replace("{{$i}}",String.valueOf(i+1)));
+            return;
         }
 
         Map<String, String> hashMap = new HashMap<>();
@@ -251,22 +244,9 @@ public class EditSubjectUI
             Output.PopUpAlert(Lang.GenericError);
             return;
         }
-        if (idLesson == 0)
-        {
-            Controller.getChapters().get(idChapter).getFinalTest().getSubjects().get(idSubject)
-                    .setEnunt(testFieldText);
-            Controller.getChapters().get(idChapter).getFinalTest().getSubjects().get(idSubject)
-                    .setOptions(hashOp);
-        }
-        else
-        {
-            Controller.getChapters().get(idChapter).getLessons().get(idLesson)
-                    .getTest().getSubjects().get(idSubject)
-                    .setEnunt(testFieldText);
-            Controller.getChapters().get(idChapter).getLessons().get(idLesson)
-                    .getTest().getSubjects().get(idSubject)
-                    .setOptions(hashOp);
-        }
+
+        subj.setEnunt(testFieldText);
+        subj.setOptions(hashOp);
 
         Output.PopUp(Lang.SuccessEditSubject);
         closeFrame();

@@ -43,9 +43,9 @@ public class Controller
     {
         new LessonListAdminUI(idChapter,lastPage);
     }
-    public static void ShowEditSubjectUI(int idChapter,int idLesson,int idSubject)
+    public static void ShowEditSubjectUI(Object parent,int idSubject)
     {
-        new EditSubjectUI(idChapter,idLesson,idSubject);
+        new EditSubjectUI(parent,idSubject);
     }
     public static void ShowAddLessonUI(int idChapter,int currPage,int chapterPage)
     {

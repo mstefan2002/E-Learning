@@ -17,9 +17,10 @@ public class User extends Client
         super(username, name,lastname,email,age);
         lessonsRead = new HashMap<>();
         testsResult = new HashMap<>();
-        for(int i = 1,szChapter = Controller.getChapters().size(); i<= szChapter; ++i)
+        Map<Integer,Chapter> chapters = Controller.getChapters();
+        for(int i = 1,szChapter = chapters.size(); i<= szChapter; ++i)
         {
-            final Chapter chapter = Controller.getChapters().get(i);
+            final Chapter chapter = chapters.get(i);
             final String chapterName = chapter.getName();
             final int szLesson=chapter.getLessonsSize();
             Map<Integer, Lesson> lessons = chapter.getLessons();

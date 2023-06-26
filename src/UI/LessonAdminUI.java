@@ -52,7 +52,7 @@ public class LessonAdminUI
         deltestButton.setBounds(975, 100, 150, 50);
         deltestButton.addActionListener(e ->
         {
-            if(!Controller.getChapters().get(idChapter).getLessons().get(idLesson).removeTest())
+            if(!lesson.removeTest())
             {
                 Output.PopUpAlert(Lang.GenericError);
                 return;

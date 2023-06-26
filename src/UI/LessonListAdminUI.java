@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
 
 public class LessonListAdminUI
@@ -48,8 +49,9 @@ public class LessonListAdminUI
 
         myList = new LinkedList<>();
 
-        for (int i = 1,szLesson = chapter.getLessonsSize(); i <= szLesson; ++i) {
-            Lesson lesson = chapter.getLessons().get(i);
+        Map<Integer,Lesson> lessons = chapter.getLessons();
+        for (int i = 1,szLesson = lessons.size(); i <= szLesson; ++i) {
+            Lesson lesson = lessons.get(i);
             String aux = Lang.LessonAdminLabel.replace("{{$lessonName}}",lesson.getName());
             if(lesson.hasTest())
                 aux = aux.replace("{{$hasTest}}",Lang.LessonAdminHasTest);
@@ -134,13 +136,14 @@ public class LessonListAdminUI
                 self.closeFrame();
             else if(source == self.testButton)
             {
-                if(!Controller.getChapters().get(self.idChapter).hasTest())
+                Chapter chapter = Controller.getChapters().get(self.idChapter);
+                if(!chapter.hasTest())
                 {
                     self.frame.dispose();
                     Controller.ShowAddTestUI(0, self.idChapter, self.currPage, self.chapterPage);
                     return;
                 }
-                if(!Controller.getChapters().get(self.idChapter).removeTest())
+                if(!chapter.removeTest())
                 {
                     Output.PopUpAlert(Lang.GenericError);
                     return;

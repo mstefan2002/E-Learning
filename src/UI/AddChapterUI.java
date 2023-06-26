@@ -60,10 +60,11 @@ public class AddChapterUI
             Output.PopUpAlert(Lang.EmptyChapterNameField);
             return;
         }
-        int szChapter = Controller.getChapters().size();
+        Map<Integer,Chapter> chapters= Controller.getChapters();
+        int szChapter = chapters.size();
         for (int i = 1; i <= szChapter; ++i)
         {
-            if(Controller.getChapters().get(i).getName().equals(name))
+            if(chapters.get(i).getName().equals(name))
             {
                 Output.PopUpAlert(Lang.ChapterAlreadyExists);
                 return;
@@ -81,8 +82,8 @@ public class AddChapterUI
 
         Chapter chapter = new Chapter(name);
         int sz = szChapter+1;
-        Controller.getChapters().put(sz,chapter);
-        Controller.getChapters().get(sz).init();
+        chapters.put(sz,chapter);
+        chapters.get(sz).init();
 
         Output.PopUp(Lang.SuccessAddChapter);
         frame.dispose();

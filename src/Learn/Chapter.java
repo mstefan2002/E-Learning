@@ -84,11 +84,11 @@ public class Chapter
             {
                 File currFolder = new File("data/" + this.name + location[i]);
                 File destFolder = new File("data/" + name + location[i]);
-                if (!currFolder.renameTo(destFolder))
-                {
-                    Output.PopUpAlert(Lang.ErrorChangeChapterName);
-                    return;
-                }
+                if (currFolder.renameTo(destFolder))
+                    continue;
+
+                Output.PopUpAlert(Lang.ErrorChangeChapterName);
+                return;
             }
         }
         catch (Exception e)

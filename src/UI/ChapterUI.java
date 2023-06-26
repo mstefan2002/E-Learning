@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.function.Function;
 
 public class ChapterUI
@@ -44,9 +45,10 @@ public class ChapterUI
         myList = new LinkedList<>();
 
         User user = (User)Controller.getClient();
-        for (int i = 1,szChapter=Controller.getChapters().size(); i <= szChapter; ++i)
+        Map<Integer,Chapter> chapters = Controller.getChapters();
+        for (int i = 1,szChapter=chapters.size(); i <= szChapter; ++i)
         {
-            Chapter chapter = Controller.getChapters().get(i);
+            Chapter chapter = chapters.get(i);
             String chapterName = chapter.getName();
             String aux = Lang.ChapterUserButton.replace("{{$countTests}}",String.valueOf(chapter.getTestsSize()))
                     .replace("{{$userTests}}",String.valueOf(user.getTests(chapterName)))
