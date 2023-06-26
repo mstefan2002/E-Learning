@@ -63,7 +63,7 @@ public class AdminUsersUI
 
 
         JButton addButton = new JButton(Lang.AddStudentLabel);
-        addButton.addActionListener(e->Controller.AddUserUI(frame));
+        addButton.addActionListener(e->Controller.ShowAddUserUI(frame));
         addButton.setBounds(425, 0, 150, 50);
 
         JButton backButton = new JButton(Lang.Back);
