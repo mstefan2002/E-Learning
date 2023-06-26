@@ -18,12 +18,9 @@ import java.util.function.Function;
 
 public class LessonListAdminUI
 {
-    protected final int itemsPerPage = 12;
-    protected JButton addButton, backButton, editButton,testButton;
-    protected JFrame frame;
-    protected LinkedList<JButton> myList;
-    protected int currPage,chapterPage,idChapter;
-
+    private JFrame frame;
+    private LinkedList<JButton> myList;
+    private int currPage,chapterPage,idChapter;
     public LessonListAdminUI(int idChapter, int lastPage)
     {
         startUI(idChapter, lastPage, 0);
@@ -67,21 +64,21 @@ public class LessonListAdminUI
         }
 
 
-        addButton = new JButton(Lang.AddLessonLabel_Two);
+        JButton addButton = new JButton(Lang.AddLessonLabel_Two);
         addButton.addActionListener(e->pressAddButton());
         addButton.setBounds(825, 0, 150, 50);
 
-        editButton = new JButton(Lang.EditChapterLabel);
+        JButton editButton = new JButton(Lang.EditChapterLabel);
         editButton.addActionListener(e->Controller.ShowEditChapterUI(frame,idChapter,currPage,chapterPage));
         editButton.setBounds(825, 50, 150, 50);
 
-        testButton = new JButton(Lang.AddTestLabel_Two);
+        JButton testButton = new JButton(Lang.AddTestLabel_Two);
         testButton.addActionListener(e->pressTestButton());
         testButton.setBounds(825, 100, 150, 50);
         if(chapter.hasTest())
             testButton.setText(Lang.DeleteTestLabel);
 
-        backButton = new JButton(Lang.Back);
+        JButton backButton = new JButton(Lang.Back);
         backButton.addActionListener(e->closeFrame());
         backButton.setBounds(825, 150, 150, 50);
 
@@ -91,7 +88,7 @@ public class LessonListAdminUI
         frame.add(editButton);
 
         Function<Integer,Integer> func = (x) -> (this.currPage+=x);
-        Pagination.start(myList,currPage,frame,itemsPerPage,func,0,0,800,50);
+        Pagination.start(myList,currPage,frame, 12,func,0,0,800,50);
 
         frame.setLayout(null);
         frame.setResizable(false);

@@ -119,7 +119,7 @@ public class TestUserUI
             }
         });
     }
-    protected void closeFrame()
+    private void closeFrame()
     {
         frame.dispose();
         if(idLesson == 0)
@@ -207,15 +207,15 @@ public class TestUserUI
         updateModeUI();
         nextButton.setText(Lang.NextSubjectLabel);
     }
-    protected String replaceToHtml(String str)
+    private String replaceToHtml(String str)
     {
         return str.replaceAll("<","&lt;").replaceAll("\n","<br>").replaceAll("\t","&nbsp;");
     }
-    protected String getEnunt()
+    private String getEnunt()
     {
         return ("<html><font color='blue' size='6'><b>"+replaceToHtml(subj.getEnunt())+"</b></font></html>");
     }
-    protected void updateUI()
+    private void updateUI()
     {
         int szSubject = subjects.size();
         subj = subjects.get(currSubj);
@@ -236,7 +236,7 @@ public class TestUserUI
         if (currSubj + 1 == szSubject)
             nextButton.setText(Lang.SendTestLabel);
     }
-    protected void updateModeUI()
+    private void updateModeUI()
     {
         for (HashMap.Entry<String, Integer> entry : subj.getOptions().entrySet())
         {
