@@ -9,7 +9,6 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -18,11 +17,9 @@ import java.util.function.Function;
 
 public class AdminUsersUI
 {
-    protected int itemsPerPage = 7;
-    protected JButton addButton,backButton;
-    protected JFrame frame;
-    protected LinkedList<JButton> myList;
-    protected int currPage;
+    private JFrame frame;
+    private LinkedList<JButton> myList;
+    private int currPage;
     public AdminUsersUI(Admin client)
     {
         startUI(client, 0);
@@ -38,7 +35,6 @@ public class AdminUsersUI
         frame = new JFrame(Lang.ManagerUsersTitle);
         frame.setSize(600, 500);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        ButtonClickListener listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
 
@@ -58,7 +54,7 @@ public class AdminUsersUI
                 JButton profilButton = new JButton(aux.toString());
                 profilButton.setName(currentUserName);
                 profilButton.setToolTipText(aux.toString());
-                profilButton.addActionListener(listener);
+                profilButton.addActionListener(e->pressButton(e));
                 frame.add(profilButton);
                 profilButton.setVisible(false);
                 myList.add(profilButton);
@@ -67,19 +63,19 @@ public class AdminUsersUI
         });
 
 
-        addButton = new JButton(Lang.AddStudentLabel);
-        addButton.addActionListener(listener);
+        JButton addButton = new JButton(Lang.AddStudentLabel);
+        addButton.addActionListener(e->Controller.AddUserUI(frame));
         addButton.setBounds(425, 0, 150, 50);
 
-        backButton = new JButton(Lang.Back);
-        backButton.addActionListener(listener);
+        JButton backButton = new JButton(Lang.Back);
+        backButton.addActionListener(e->Controller.goBackDashboard(frame));
         backButton.setBounds(425, 50, 150, 50);
 
         frame.add(backButton);
         frame.add(addButton);
 
         Function<Integer,Integer> func = (x) -> (currPage+=x);
-        Pagination.start(myList,curPage,frame,itemsPerPage,func,0,0,400,50);
+        Pagination.start(myList,curPage,frame, 7,func,0,0,400,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -94,50 +90,34 @@ public class AdminUsersUI
             }
         });
     }
-    static class ButtonClickListener implements ActionListener
+    private void pressButton(ActionEvent e)
     {
-        AdminUsersUI self;
-        public ButtonClickListener(AdminUsersUI self)
+        Object source = e.getSource();
+        for (JButton element : myList)
         {
-            this.self = self;
-        }
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            Object source = e.getSource();
-            if(source == self.addButton)
-                Controller.AddUserUI(self.frame);
-            else if(source == self.backButton)
-                Controller.goBackDashboard(self.frame);
-            else
+            if (source != element)
+                continue;
+
+            String userName = element.getName();
+            FileHandler file = new FileHandler("data/clients.txt");
+            file.read(new FileHandler.GetReadDataCallback()
             {
-                for (JButton element : self.myList)
+                public boolean getHash(Map<String, String> hash)
                 {
-                    if (source != element)
-                        continue;
+                    if (!hash.get("user").equals(userName))
+                        return true;
 
-                    String userName = element.getName();
-                    FileHandler file = new FileHandler("data/clients.txt");
-                    file.read(new FileHandler.GetReadDataCallback()
-                    {
-                        public boolean getHash(Map<String, String> hash)
-                        {
-                            if (!hash.get("user").equals(userName))
-                                return true;
-
-                            User client = new User(userName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
-                            Controller.ShowEditUserUI(self.frame, client, self.currPage);
-                            return false; // we found the account, stop the reading
-                        }
-                        @Override
-                        public void onComplete() // we didn't find the account
-                        {
-                            Output.PopUpAlert(Lang.UserDoesntExist);
-                        }
-                    });
-                    return;
+                    User client = new User(userName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
+                    Controller.ShowEditUserUI(frame, client, currPage);
+                    return false; // we found the account, stop the reading
                 }
-            }
+                @Override
+                public void onComplete() // we didn't find the account
+                {
+                    Output.PopUpAlert(Lang.UserDoesntExist);
+                }
+            });
+            return;
         }
     }
 }

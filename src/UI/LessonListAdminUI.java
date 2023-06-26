@@ -9,7 +9,7 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -45,8 +45,6 @@ public class LessonListAdminUI
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        ButtonClickListener listener = new ButtonClickListener(this);
-
         myList = new LinkedList<>();
 
         Map<Integer,Lesson> lessons = chapter.getLessons();
@@ -61,7 +59,7 @@ public class LessonListAdminUI
             JButton lessonButton = new JButton(aux);
             lessonButton.setName(String.valueOf(i));
             lessonButton.setToolTipText(aux);
-            lessonButton.addActionListener(listener);
+            lessonButton.addActionListener(this::pressLessonButton);
 
             frame.add(lessonButton);
             lessonButton.setVisible(false);
@@ -70,21 +68,21 @@ public class LessonListAdminUI
 
 
         addButton = new JButton(Lang.AddLessonLabel_Two);
-        addButton.addActionListener(listener);
+        addButton.addActionListener(e->pressAddButton());
         addButton.setBounds(825, 0, 150, 50);
 
         editButton = new JButton(Lang.EditChapterLabel);
-        editButton.addActionListener(listener);
+        editButton.addActionListener(e->Controller.ShowEditChapterUI(frame,idChapter,currPage,chapterPage));
         editButton.setBounds(825, 50, 150, 50);
 
         testButton = new JButton(Lang.AddTestLabel_Two);
-        testButton.addActionListener(listener);
+        testButton.addActionListener(e->pressTestButton());
         testButton.setBounds(825, 100, 150, 50);
         if(chapter.hasTest())
             testButton.setText(Lang.DeleteTestLabel);
 
         backButton = new JButton(Lang.Back);
-        backButton.addActionListener(listener);
+        backButton.addActionListener(e->closeFrame());
         backButton.setBounds(825, 150, 150, 50);
 
         frame.add(testButton);
@@ -108,61 +106,44 @@ public class LessonListAdminUI
             }
         });
     }
-    protected void closeFrame()
+    private void closeFrame()
     {
         frame.dispose();
         Controller.ShowChaptersAdminUI(chapterPage);
     }
-    static class ButtonClickListener implements ActionListener
+    private void pressLessonButton(ActionEvent e)
     {
-        LessonListAdminUI self;
-        public ButtonClickListener(LessonListAdminUI self)
+        Object source = e.getSource();
+        for (JButton element : myList)
         {
-            this.self = self;
-        }
+            if (source != element)
+                continue;
 
-        @Override
-        public void actionPerformed(ActionEvent e)
+            frame.dispose();
+            Controller.ShowLessonAdminUI(Integer.parseInt(element.getName()),idChapter,currPage,chapterPage);
+            return;
+        }
+    }
+    private void pressAddButton()
+    {
+        frame.dispose();
+        Controller.ShowAddLessonUI(idChapter,currPage,chapterPage);
+    }
+    private void pressTestButton()
+    {
+        Chapter chapter = Controller.getChapters().get(idChapter);
+        if(!chapter.hasTest())
         {
-            Object source = e.getSource();
-            if (source == self.addButton)
-            {
-                self.frame.dispose();
-                Controller.ShowAddLessonUI(self.idChapter,self.currPage,self.chapterPage);
-            }
-            else if(source==self.editButton)
-                Controller.ShowEditChapterUI(self.frame,self.idChapter,self.currPage,self.chapterPage);
-            else if (source == self.backButton)
-                self.closeFrame();
-            else if(source == self.testButton)
-            {
-                Chapter chapter = Controller.getChapters().get(self.idChapter);
-                if(!chapter.hasTest())
-                {
-                    self.frame.dispose();
-                    Controller.ShowAddTestUI(0, self.idChapter, self.currPage, self.chapterPage);
-                    return;
-                }
-                if(!chapter.removeTest())
-                {
-                    Output.PopUpAlert(Lang.GenericError);
-                    return;
-                }
-                self.frame.dispose();
-                Controller.ShowLessonListAdminUI(self.idChapter, self.chapterPage, self.currPage);
-            }
-            else
-            {
-                for (JButton element : self.myList)
-                {
-                    if (source != element)
-                        continue;
-
-                    self.frame.dispose();
-                    Controller.ShowLessonAdminUI(Integer.parseInt(element.getName()),self.idChapter,self.currPage,self.chapterPage);
-                    return;
-                }
-            }
+            frame.dispose();
+            Controller.ShowAddTestUI(0, idChapter, currPage, chapterPage);
+            return;
         }
+        if(!chapter.removeTest())
+        {
+            Output.PopUpAlert(Lang.GenericError);
+            return;
+        }
+        frame.dispose();
+        Controller.ShowLessonListAdminUI(idChapter, chapterPage, currPage);
     }
 }

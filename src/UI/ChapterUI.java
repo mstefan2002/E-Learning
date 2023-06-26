@@ -8,7 +8,6 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -17,12 +16,9 @@ import java.util.function.Function;
 
 public class ChapterUI
 {
-    protected final int itemsPerPage = 12;
-    protected JButton backButton;
-    protected JFrame frame;
-    protected LinkedList<JButton> myList;
-    protected int currPage;
-
+    private JFrame frame;
+    private LinkedList<JButton> myList;
+    private int currPage;
     public ChapterUI()
     {
         startUI(0);
@@ -39,8 +35,6 @@ public class ChapterUI
         frame = new JFrame(Lang.ChaptersTitle);
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        ButtonClickListener listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
 
@@ -59,21 +53,21 @@ public class ChapterUI
             JButton chapterButton = new JButton(aux);
             chapterButton.setName(String.valueOf(i));
             chapterButton.setToolTipText(aux);
-            chapterButton.addActionListener(listener);
+            chapterButton.addActionListener(this::pressChapter);
 
             frame.add(chapterButton);
             chapterButton.setVisible(false);
             myList.add(chapterButton);
         }
 
-        backButton = new JButton(Lang.Back);
-        backButton.addActionListener(listener);
+        JButton backButton = new JButton(Lang.Back);
+        backButton.addActionListener(e->Controller.goBackDashboard(frame));
         backButton.setBounds(825, 0, 150, 50);
 
         frame.add(backButton);
 
         Function<Integer,Integer> func = (x) -> (currPage+=x);
-        Pagination.start(myList,curPage,frame,itemsPerPage,func,0,0,800,50);
+        Pagination.start(myList,curPage,frame, 12,func,0,0,800,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -88,32 +82,16 @@ public class ChapterUI
             }
         });
     }
-
-    static class ButtonClickListener implements ActionListener
+    private void pressChapter(ActionEvent e)
     {
-        ChapterUI self;
-        public ButtonClickListener(ChapterUI self)
+        Object source = e.getSource();
+        for (JButton element : myList)
         {
-            this.self = self;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            Object source = e.getSource();
-            if (source == self.backButton)
-                Controller.goBackDashboard(self.frame);
-            else
-            {
-                for (JButton element : self.myList)
-                {
-                    if (source != element)
-                        continue;
-                    self.frame.dispose();
-                    Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),self.currPage);
-                    return;
-                }
-            }
+            if (source != element)
+                continue;
+            frame.dispose();
+            Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),currPage);
+            return;
         }
     }
 }

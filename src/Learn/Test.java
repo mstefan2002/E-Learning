@@ -34,12 +34,13 @@ public class Test
                 for (HashMap.Entry<String, String> entry : hash.entrySet())
                 {
                     String key = entry.getKey();
+                    String value = entry.getValue();
                     if(key.equals("enunt"))
                     {
-                        subj.setEnunt(entry.getValue());
+                        subj.setEnunt(value);
                         continue;
                     }
-                    hashMap.put(key,Integer.parseInt(entry.getValue()));
+                    hashMap.put(key,Integer.parseInt(value));
                 }
                 subj.setOptions(hashMap);
                 subjects.add(subj);
@@ -49,7 +50,7 @@ public class Test
             @Override
             public void onComplete() // we check if the subject is empty
             {
-                if(subjects.size() != 0)
+                if(!subjects.isEmpty())
                     return;
 
                 Output.PopUpAlert(Lang.GenericError);

@@ -10,7 +10,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -21,10 +20,8 @@ import Lang.Lang;
 
 public class SearchSubjUI
 {
-    protected JButton backButton;
-    protected final JFrame frame;
+    private final JFrame frame;
     private final LinkedList<JButton> myList;
-    private final ButtonClickListener listener;
     private final JTextField searchField;
     private final JPanel panel;
     public SearchSubjUI()
@@ -55,7 +52,6 @@ public class SearchSubjUI
         });
         searchField.setBounds(10,30,400,30);
         frame.add(searchField);
-        listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
         panel = new JPanel();
@@ -75,8 +71,8 @@ public class SearchSubjUI
                 addSubj(chapter);
         }
 
-        backButton = new JButton(Lang.Back);
-        backButton.addActionListener(listener);
+        JButton backButton = new JButton(Lang.Back);
+        backButton.addActionListener(e->Controller.goBackDashboard(frame));
         backButton.setBounds(825, 10, 150, 30);
 
         frame.add(backButton);
@@ -136,31 +132,16 @@ public class SearchSubjUI
             chapterButton.putClientProperty("parent",obj);
             chapterButton.putClientProperty("idSubject",i);
             chapterButton.setToolTipText(aux);
-            chapterButton.addActionListener(listener);
+            chapterButton.addActionListener(this::pressSubject);
             panel.add(chapterButton);
             myList.add(chapterButton);
         }
     }
-    static class ButtonClickListener implements ActionListener
+    private void pressSubject(ActionEvent e)
     {
-        private final SearchSubjUI self;
-        public ButtonClickListener(SearchSubjUI self)
-        {
-            this.self = self;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            Object source = e.getSource();
-            if (source == self.backButton)
-                Controller.goBackDashboard(self.frame);
-            else
-            {
-                JButton button = (JButton)source;
-                Controller.ShowEditSubjectUI(button.getClientProperty("parent"),(int)button.getClientProperty("idSubject"));
-                self.frame.dispose();
-            }
-        }
+        Object source = e.getSource();
+        JButton button = (JButton)source;
+        Controller.ShowEditSubjectUI(button.getClientProperty("parent"),(int)button.getClientProperty("idSubject"));
+        frame.dispose();
     }
 }

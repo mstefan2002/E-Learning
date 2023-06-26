@@ -10,7 +10,6 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.LinkedList;
@@ -19,12 +18,9 @@ import java.util.function.Function;
 
 public class LessonListUserUI
 {
-    protected final int itemsPerPage = 12;
-    protected JButton backButton, testButton;
-    protected JFrame frame;
-    protected LinkedList<JButton> myList;
-    protected int currPage,chapterPage,idChapter;
-
+    private JFrame frame;
+    private LinkedList<JButton> myList;
+    private int currPage,chapterPage,idChapter;
     public LessonListUserUI(int idChapter, int lastPage)
     {
         startUI(idChapter, lastPage, 0);
@@ -47,8 +43,6 @@ public class LessonListUserUI
         frame = new JFrame(chapterName);
         frame.setSize(1000, 750);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        ButtonClickListener listener = new ButtonClickListener(this);
 
         myList = new LinkedList<>();
 
@@ -79,13 +73,13 @@ public class LessonListUserUI
             JButton lessonButton = new JButton(aux);
             lessonButton.setName(String.valueOf(i));
             lessonButton.setToolTipText(aux);
-            lessonButton.addActionListener(listener);
+            lessonButton.addActionListener(this::pressLesson);
             frame.add(lessonButton);
             lessonButton.setVisible(false);
             myList.add(lessonButton);
         }
-        testButton = new JButton(Lang.FinalExam);
-        testButton.addActionListener(listener);
+        JButton testButton = new JButton(Lang.FinalExam);
+        testButton.addActionListener(e->pressTest());
         testButton.setBounds(825, 50, 150, 50);
 
         if(chapter.hasTest())
@@ -106,8 +100,8 @@ public class LessonListUserUI
         else
             testButton.setEnabled(false);
 
-        backButton = new JButton(Lang.Back);
-        backButton.addActionListener(listener);
+        JButton backButton = new JButton(Lang.Back);
+        backButton.addActionListener(e->closeFrame());
         backButton.setBounds(825, 100, 150, 50);
 
 
@@ -115,7 +109,7 @@ public class LessonListUserUI
         frame.add(backButton);
 
         Function<Integer,Integer> func = (x) -> (this.currPage+=x);
-        Pagination.start(myList,currPage,frame,itemsPerPage,func,0,0,800,50);
+        Pagination.start(myList,currPage,frame, 12,func,0,0,800,50);
 
         frame.setLayout(null);
         frame.setResizable(false);
@@ -130,55 +124,40 @@ public class LessonListUserUI
             }
         });
     }
-    protected void closeFrame()
+    private void closeFrame()
     {
         frame.dispose();
         Controller.ShowChaptersUI(chapterPage);
     }
-    static class ButtonClickListener implements ActionListener
+    private void pressLesson(ActionEvent e)
     {
-        LessonListUserUI self;
-        public ButtonClickListener(LessonListUserUI self)
+        Object source = e.getSource();
+        for (JButton element : myList)
         {
-            this.self = self;
-        }
+            if (source != element)
+                continue;
 
-        @Override
-        public void actionPerformed(ActionEvent e)
-        {
-            Object source = e.getSource();
-            if (source == self.backButton)
-                self.closeFrame();
-            else if(source == self.testButton)
-            {
-                User user = (User)Controller.getClient();
-                Chapter chapter = Controller.getChapters().get(self.idChapter);
-                String chapterName = chapter.getName();
-                int lessonsUser = user.getLessons(chapterName),lessonsSize = chapter.getLessonsSize()
+            frame.dispose();
+            Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),idChapter,currPage,chapterPage);
+            return;
+        }
+    }
+    private void pressTest()
+    {
+        User user = (User)Controller.getClient();
+        Chapter chapter = Controller.getChapters().get(idChapter);
+        String chapterName = chapter.getName();
+        int lessonsUser = user.getLessons(chapterName),lessonsSize = chapter.getLessonsSize()
                 ,testsUser = user.getTests(chapterName), testsSize = chapter.getTestsSize()-1;
-                if(lessonsUser < lessonsSize||testsUser < testsSize)
-                {
-                    Output.PopUpAlert(Lang.FinalExamRequest.replace("{{$lessonsUser}}",String.valueOf(lessonsUser))
-                            .replace("{{$lessonsSize}}",String.valueOf(lessonsSize))
-                            .replace("{{$testsUser}}",String.valueOf(testsUser))
-                            .replace("{{$testsSize}}",String.valueOf(testsSize)));
-                    return;
-                }
-                self.frame.dispose();
-                Controller.ShowTestUserUI(0,self.idChapter,self.currPage,self.chapterPage);
-            }
-            else
-            {
-                for (JButton element : self.myList)
-                {
-                    if (source != element)
-                        continue;
-
-                    self.frame.dispose();
-                    Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),self.idChapter,self.currPage,self.chapterPage);
-                    return;
-                }
-            }
+        if(lessonsUser < lessonsSize||testsUser < testsSize)
+        {
+            Output.PopUpAlert(Lang.FinalExamRequest.replace("{{$lessonsUser}}",String.valueOf(lessonsUser))
+                    .replace("{{$lessonsSize}}",String.valueOf(lessonsSize))
+                    .replace("{{$testsUser}}",String.valueOf(testsUser))
+                    .replace("{{$testsSize}}",String.valueOf(testsSize)));
+            return;
         }
+        frame.dispose();
+        Controller.ShowTestUserUI(0,idChapter,currPage,chapterPage);
     }
 }
