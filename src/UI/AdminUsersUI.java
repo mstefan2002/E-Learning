@@ -6,34 +6,19 @@ import Util.FileHandler;
 import Util.Output;
 import Lang.Lang;
 import Util.Pagination;
-
+import Util.Frame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.function.Function;
 
-public class AdminUsersUI
+public class AdminUsersUI implements CallBack
 {
-    private JFrame frame;
-    private int currPage;
-    public AdminUsersUI(Admin client)
+    private final Frame frame;
+    public AdminUsersUI()
     {
-        startUI(client, 0);
-    }
-    public AdminUsersUI(Admin client, int curPage)
-    {
-        startUI(client, curPage);
-    }
-    private void startUI(Admin client, int curPage)
-    {
-        this.currPage = curPage;
-
-        frame = new JFrame(Lang.ManagerUsersTitle);
-        frame.setSize(600, 500);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Admin client = (Admin)Controller.getClient();
+        frame = new Frame(Lang.ManagerUsersTitle,600, 500);
 
         LinkedList<JButton> myList = new LinkedList<>();
 
@@ -63,31 +48,24 @@ public class AdminUsersUI
 
 
         JButton addButton = new JButton(Lang.AddStudentLabel);
-        addButton.addActionListener(e->Controller.ShowAddUserUI(frame));
+        addButton.addActionListener(e->Controller.ShowAddUserUI());
         addButton.setBounds(425, 0, 150, 50);
 
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e->Controller.goBackDashboard(frame));
+        backButton.addActionListener(e->closeFrame());
         backButton.setBounds(425, 50, 150, 50);
 
         frame.add(backButton);
         frame.add(addButton);
 
-        Function<Integer,Integer> func = (x) -> (currPage+=x);
-        Pagination.start(myList,curPage,frame, 7,func,0,0,400,50);
+        Pagination.start(myList,Controller.getPageUser(),frame, 7,Controller.funcPageUser(),0,0,400,50);
 
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                Controller.goBackDashboard(frame);
-            }
-        });
+        frame.closeEvent(this);
+    }
+    public Frame getFrame(){return frame;}
+    public void goBack()
+    {
+        Controller.goBackDashboard();
     }
     private void pressButton(ActionEvent e)
     {
@@ -101,8 +79,11 @@ public class AdminUsersUI
                 if (!hash.get("user").equals(userName))
                     return true;
 
+                if(!frame.canSkip(false))
+                    return false;// we found the account but he has some second frame opened, stop the reading
+
                 User client = new User(userName, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
-                Controller.ShowEditUserUI(frame, client, currPage);
+                Controller.ShowEditUserUI(client);
                 return false; // we found the account, stop the reading
             }
             @Override

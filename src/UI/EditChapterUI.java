@@ -1,9 +1,9 @@
 package UI;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.*;
+import Util.Frame;
 import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JButton;
@@ -12,20 +12,18 @@ import Learn.Chapter;
 import Util.Output;
 import Lang.Lang;
 
-public class EditChapterUI
+public class EditChapterUI implements CloseFrame
 {
-    private final JFrame frame,originFrame;
+    private final Frame frame;
     private final JTextField nameField;
 
-    public EditChapterUI(JFrame originFrame,int idChapter, int lessonPage, int chapterPage)
+    public EditChapterUI()
     {
-        this.originFrame = originFrame;
+        Controller.addPreventGoingBack();
 
-        String chapterName= Controller.getChapters().get(idChapter).getName();
+        String chapterName= Controller.getChapters().get(Controller.getIdChapter()).getName();
 
-        frame = new JFrame(chapterName);
-        frame.setSize(300, 200);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(chapterName,300, 200);
         frame.setLayout(new GridLayout(0,1));
 
         JLabel nameLabel = new JLabel(Lang.NameChapterLabel);
@@ -36,10 +34,10 @@ public class EditChapterUI
         buttonPanel.setSize(300, 150);
 
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e -> frame.dispose());
+        backButton.addActionListener(e -> closeFrame(true));
 
         JButton saveButton = new JButton(Lang.Save);
-        saveButton.addActionListener(e -> saveChapter(idChapter,lessonPage,chapterPage));
+        saveButton.addActionListener(e -> saveChapter());
 
         buttonPanel.add(backButton);
         buttonPanel.add(saveButton);
@@ -47,12 +45,18 @@ public class EditChapterUI
         frame.add(nameLabel);
         frame.add(nameField);
         frame.add(buttonPanel);
-
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+        frame.closeEvent(this);
     }
-    private void saveChapter(int idChapter,int lessonPage,int chapterPage)
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.removePreventGoingBack();
+        if(onlyFrame)
+            return;
+        Controller.getCurrentFrame().dispose();
+        Controller.ShowLessonListAdminUI();
+    }
+    private void saveChapter()
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())
@@ -60,6 +64,7 @@ public class EditChapterUI
             Output.PopUpAlert(Lang.EmptyChapterNameField);
             return;
         }
+        int idChapter = Controller.getIdChapter();
         Map<Integer, Chapter> chapters = Controller.getChapters();
         for (int i = 1,szChapter = chapters.size(); i <= szChapter; ++i)
         {
@@ -70,8 +75,6 @@ public class EditChapterUI
             return;
         }
         chapters.get(idChapter).setName(name);
-        frame.dispose();
-        originFrame.dispose();
-        Controller.ShowLessonListAdminUI(idChapter,chapterPage,lessonPage);
+        closeFrame(false);
     }
 }

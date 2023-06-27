@@ -22,7 +22,7 @@ public class Lang
             MarkReadLessonLabel,PrintLessonLabel,LoginTitle,LoginLabel,WelcomeLabel,ManageProfileAdminLabel,ManageUsersLabel,ManageChaptersLabel,
             ManageSubjectsLabel,DashboardTitle,ManageProfileUserLabel,ChaptersLabel,ProfileTitle,ProfileRoleAdminLabel,ProfileRoleUserLabel,ProfileUserNameLabel,
             ManagerSubjectTitle,SearchLabel,SubjectLabel,TestTitle,TestOptionContentLabel,CurrentSubjectLabel,NextSubjectLabel,SendTestLabel,ExitLabel,
-            TestPointsMessage,LoginFailMessage,AddUserTitle;
+            TestPointsMessage,LoginFailMessage,AddUserTitle,CloseTabsMessage;
     public static void setLang(Language language)
     {
         // TO DO: read from file instead of the class

@@ -1,6 +1,5 @@
 package UI;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.*;
@@ -12,18 +11,18 @@ import Controller.*;
 import Util.Output;
 import Util.Util;
 import Util.FileHandler;
+import Util.Frame;
 import Lang.Lang;
-public class AddUserUI
+public class AddUserUI implements CloseFrame
 {
-    private final JFrame frame,originFrame;
+    private final Frame frame;
     private final JTextField nameField,lastnameField,emailField,ageField,userField,passwordField;
 
-    public AddUserUI(JFrame originFrame)
+    public AddUserUI()
     {
-        this.originFrame = originFrame;
-        frame = new JFrame(Lang.AddUserTitle);
-        frame.setSize(300, 400);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Controller.addPreventGoingBack();
+
+        frame = new Frame(Lang.AddUserTitle,300, 400);
         frame.setLayout(new GridLayout(0,1));
 
         JLabel userLabel = new JLabel(Lang.UserNameLabel);
@@ -44,7 +43,7 @@ public class AddUserUI
         buttonPanel.setSize(300, 150);
 
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e -> frame.dispose());
+        backButton.addActionListener(e -> closeFrame(true));
 
         JButton addButton = new JButton(Lang.Add);
         addButton.addActionListener(e -> addUser());
@@ -66,9 +65,16 @@ public class AddUserUI
         frame.add(ageField);
         frame.add(buttonPanel);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+        frame.closeEvent(this);
+    }
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.removePreventGoingBack();
+        if(onlyFrame)
+            return;
+        Controller.getCurrentFrame().dispose();
+        Controller.ShowUsersUI();
     }
     private void addUser()
     {
@@ -200,9 +206,7 @@ public class AddUserUI
                     return;
                 }
                 Output.PopUp(Lang.SuccessAddUser);
-                frame.dispose();
-                originFrame.dispose();
-                Controller.ShowUsersUI();
+                closeFrame(false);
             }
         });
 

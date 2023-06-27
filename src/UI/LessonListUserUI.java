@@ -10,38 +10,21 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.function.Function;
+import Util.Frame;
 
-public class LessonListUserUI
+public class LessonListUserUI implements CloseFrame
 {
-    private JFrame frame;
-    private int currPage,chapterPage,idChapter;
-    public LessonListUserUI(int idChapter, int lastPage)
+    private final Frame frame;
+    public LessonListUserUI()
     {
-        startUI(idChapter, lastPage, 0);
-    }
+        Controller.setIdLesson(0);
 
-    public LessonListUserUI(int idChapter, int lastPage, int currPage)
-    {
-        startUI(idChapter, lastPage, currPage);
-    }
-
-    private void startUI(int idChapter, int lastPage, int currPage)
-    {
-        this.idChapter=idChapter;
-        this.chapterPage=lastPage;
-        this.currPage=currPage;
-
-        Chapter chapter = Controller.getChapters().get(idChapter);
+        Chapter chapter = Controller.getChapters().get(Controller.getIdChapter());
         String chapterName = chapter.getName();
 
-        frame = new JFrame(chapterName);
-        frame.setSize(1000, 750);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(chapterName,1000, 750);
 
         LinkedList<JButton> myList = new LinkedList<>();
 
@@ -100,44 +83,31 @@ public class LessonListUserUI
             testButton.setEnabled(false);
 
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e->closeFrame());
+        backButton.addActionListener(e->closeFrame(false));
         backButton.setBounds(825, 100, 150, 50);
-
 
         frame.add(testButton);
         frame.add(backButton);
 
-        Function<Integer,Integer> func = (x) -> (this.currPage+=x);
-        Pagination.start(myList,currPage,frame, 12,func,0,0,800,50);
-
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame();
-            }
-        });
+        Pagination.start(myList,Controller.getPageLesson(),frame, 12,Controller.funcPageLesson(),0,0,800,50);
+        frame.closeEvent(this);
     }
-    private void closeFrame()
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
-        Controller.ShowChaptersUI(chapterPage);
+        Controller.ShowChaptersUI();
     }
     private void pressLesson(ActionEvent e)
     {
         JButton element = (JButton) e.getSource();
         frame.dispose();
-        Controller.ShowLessonUserUI(Integer.parseInt(element.getName()),idChapter,currPage,chapterPage);
+        Controller.setIdLesson(Integer.parseInt(element.getName()));
+        Controller.ShowLessonUserUI();
     }
     private void pressTest()
     {
         User user = (User)Controller.getClient();
-        Chapter chapter = Controller.getChapters().get(idChapter);
+        Chapter chapter = Controller.getChapters().get(Controller.getIdChapter());
         String chapterName = chapter.getName();
         int lessonsUser = user.getLessons(chapterName),lessonsSize = chapter.getLessonsSize()
                 ,testsUser = user.getTests(chapterName), testsSize = chapter.getTestsSize()-1;
@@ -150,6 +120,6 @@ public class LessonListUserUI
             return;
         }
         frame.dispose();
-        Controller.ShowTestUserUI(0,idChapter,currPage,chapterPage);
+        Controller.ShowTestUserUI();
     }
 }

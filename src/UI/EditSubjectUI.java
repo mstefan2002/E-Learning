@@ -8,20 +8,18 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import Util.Output;
 import Util.FileHandler;
 import Lang.Lang;
-
+import Util.Frame;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EditSubjectUI
+public class EditSubjectUI implements CloseFrame
 {
-    private final JFrame frame;
+    private final Frame frame;
     private final JLabel totalpointLabel;
     private final JTextArea testField;
     private final JTextArea[] optionsField;
@@ -47,11 +45,8 @@ public class EditSubjectUI
         }
         subj = test.getSubjects().get(idSubject);
 
-        frame = new JFrame(Lang.EditSubjectTitle);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.EditSubjectTitle,1200, 720);
         frame.getContentPane().setBackground(Color.GRAY);
-        frame.setLayout(null);
-        frame.setSize(1200, 720);
 
         JLabel testLabel = new JLabel(Lang.TestLabel);
         testLabel.setBounds(20, 20, 200, 30);
@@ -132,7 +127,7 @@ public class EditSubjectUI
 
         saveButton.addActionListener(e -> saveSubject());
         delButton.addActionListener(e -> deleteSubject());
-        backButton.addActionListener(e -> closeFrame());
+        backButton.addActionListener(e -> closeFrame(false));
 
         frame.add(totalpointLabel);
         frame.add(testLabel);
@@ -140,20 +135,9 @@ public class EditSubjectUI
         frame.add(saveButton);
         frame.add(backButton);
         frame.add(delButton);
-
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame();
-            }
-        });
+        frame.closeEvent(this);
     }
-    private void closeFrame()
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
         Controller.ShowSearchSubjUI();
@@ -204,7 +188,7 @@ public class EditSubjectUI
         }
 
         Output.PopUp(Lang.SuccessDeletingSubject);
-        closeFrame();
+        closeFrame(false);
     }
     private void saveSubject()
     {
@@ -249,6 +233,6 @@ public class EditSubjectUI
         subj.setOptions(hashOp);
 
         Output.PopUp(Lang.SuccessEditSubject);
-        closeFrame();
+        closeFrame(false);
     }
 }

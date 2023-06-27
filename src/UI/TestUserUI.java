@@ -9,14 +9,13 @@ import Util.Output;
 import Lang.Lang;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import Util.Frame;
 
-public class TestUserUI
+public class TestUserUI implements CloseFrame
 {
     private final JLabel totalpointLabel;
     private final JEditorPane testField;
@@ -24,32 +23,24 @@ public class TestUserUI
     private final JEditorPane[] optionsField;
     private final JCheckBox[] checkBox;
     private final Map<Integer,List<String>> choiseField;
-    private final int idLesson,idChapter,lessonPage,chapterPage;
-    private final JFrame frame;
+    private final Frame frame;
     private final List<Subject> subjects;
     private int currSubj = 0,modeTest = 0;
     private Subject subj;
-    public TestUserUI(int idLesson,int idChapter, int lessonPage, int chapterPage)
+    public TestUserUI()
     {
-        this.idChapter = idChapter;
-        this.idLesson = idLesson;
-        this.lessonPage=lessonPage;
-        this.chapterPage=chapterPage;
-
         choiseField = new HashMap<>();
-        Chapter chapter = Controller.getChapters().get(idChapter);
+        Chapter chapter = Controller.getChapters().get(Controller.getIdChapter());
         Test test;
+        int idLesson = Controller.getIdLesson();
         if(idLesson == 0)
             test = chapter.getFinalTest();
         else
             test = chapter.getLessons().get(idLesson).getTest();
 
         subjects = test.getSubjects();
-        frame = new JFrame(Lang.TestTitle);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.TestTitle,1200, 720);
         frame.getContentPane().setBackground(Color.GRAY);
-        frame.setLayout(null);
-        frame.setSize(1200, 720);
 
         JLabel testLabel = new JLabel(Lang.TestLabel);
         testLabel.setBounds(20, 20, 200, 30);
@@ -107,25 +98,15 @@ public class TestUserUI
         frame.add(scrollPane);
         frame.add(nextButton);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame();
-            }
-        });
+        frame.closeEvent(this);
     }
-    private void closeFrame()
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
-        if(idLesson == 0)
-            Controller.ShowLessonListUserUI(idChapter,lessonPage, chapterPage);
+        if(Controller.getIdLesson() == 0)
+            Controller.ShowLessonListUserUI();
         else
-            Controller.ShowLessonUserUI(idLesson,idChapter,lessonPage,chapterPage);
+            Controller.ShowLessonUserUI();
     }
     private void nextSubj()
     {
@@ -135,7 +116,7 @@ public class TestUserUI
             ++currSubj;
             if (currSubj == szSubject)
             {
-                closeFrame();
+                closeFrame(false);
                 return;
             }
 
@@ -195,10 +176,10 @@ public class TestUserUI
         }
 
         User user = (User) Controller.getClient();
-        if (!user.setTest(Controller.getChapters().get(idChapter).getName(), idLesson, userPoints))
+        if (!user.setTest(Controller.getChapters().get(Controller.getIdChapter()).getName(), Controller.getIdLesson(), userPoints))
         {
             Output.PopUpAlert(Lang.GenericError);
-            closeFrame();
+            closeFrame(false);
             return;
         }
         Output.PopUp(Lang.TestPointsMessage.replace("{{$userPoints}}", String.valueOf(userPoints)).replace("{{$totalPoints}}", String.valueOf(totalPoints)));

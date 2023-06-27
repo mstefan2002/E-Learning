@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-
+import Util.Frame;
 import Controller.*;
 import Learn.Chapter;
 import Learn.Lesson;
@@ -14,23 +14,19 @@ import Util.Util;
 import Client.User;
 import Lang.Lang;
 
-public class EditUserUI
+public class EditUserUI implements CloseFrame
 {
-    private final JFrame frame,originFrame;
+    private final Frame frame;
     private final User client;
-    private final int curPage;
     private final JTextField nameField,lastnameField,emailField,ageField,userField,passwordField;
 
-    public EditUserUI(JFrame originFrame,User userclient,int curPage)
+    public EditUserUI(User userclient)
     {
+        Controller.addPreventGoingBack();
         this.client = userclient;
-        this.curPage=curPage;
-        this.originFrame=originFrame;
 
         String userName = userclient.getUsername();
-        frame = new JFrame(Lang.EditUserTitle.replace("{{$userName}}",userName));
-        frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.EditUserTitle.replace("{{$userName}}",userName),600, 400);
         frame.setLayout(new GridLayout(0,2));
 
         JPanel panel = new JPanel();
@@ -52,7 +48,7 @@ public class EditUserUI
         ageField = new JTextField(String.valueOf(userclient.getAge()));
 
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e -> frame.dispose());
+        backButton.addActionListener(e -> closeFrame(true));
 
         JButton deleteButton = new JButton(Lang.DeleteUserLabel);
         deleteButton.addActionListener(e ->
@@ -64,7 +60,7 @@ public class EditUserUI
                 return;
             }
             Output.PopUp(Lang.SuccessDeletingUser);
-            closeFrame();
+            closeFrame(false);
         });
 
         JButton saveButton = new JButton(Lang.Save);
@@ -111,15 +107,17 @@ public class EditUserUI
         panel.add(saveButton);
         frame.add(panel);
         frame.getContentPane().add(scrollPane);
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+
+        frame.closeEvent(this);
     }
-    private void closeFrame()
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
-        originFrame.dispose();
-        Controller.ShowUsersUI(curPage);
+        Controller.removePreventGoingBack();
+        if(onlyFrame)
+            return;
+        Controller.getCurrentFrame().dispose();
+        Controller.ShowUsersUI();
     }
     private JButton addTest(String chapterName, int idLesson,int totalPoints,String testName)
     {
@@ -269,7 +267,7 @@ public class EditUserUI
                     return;
                 }
                 Output.PopUp(Lang.SuccessEditUser);
-                closeFrame();
+                closeFrame(false);
             }
         });
 

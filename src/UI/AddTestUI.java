@@ -15,15 +15,13 @@ import Learn.Test;
 import Util.Output;
 import Util.FileHandler;
 import Util.Util;
-
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import Util.Frame;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddTestUI
+public class AddTestUI implements CloseFrame
 {
     private final JTextField[] pointField;
     private final List<Subject> subjectList;
@@ -31,21 +29,13 @@ public class AddTestUI
     private final JTextArea testField;
     private final JButton addButton,addSubjButton;
     private final JTextArea[] optionsField;
-    private final int idLesson,idChapter,lessonPage,chapterPage;
-    private final JFrame frame;
-    public AddTestUI(int idLesson,int idChapter, int lessonPage, int chapterPage)
+    private final Frame frame;
+    public AddTestUI()
     {
-        this.idChapter = idChapter;
-        this.idLesson = idLesson;
-        this.lessonPage=lessonPage;
-        this.chapterPage=chapterPage;
-
         subjectList = new ArrayList<>();
-        frame = new JFrame(Lang.AddTestTitle);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.AddTestTitle,1200, 720);
         frame.getContentPane().setBackground(Color.GRAY);
-        frame.setLayout(null);
-        frame.setSize(1200, 720);
+
 
         JLabel testLabel = new JLabel(Lang.TestLabel);
         testLabel.setBounds(20, 20, 200, 30);
@@ -121,7 +111,7 @@ public class AddTestUI
                 checkPoints(0);
         });
         addButton.addActionListener(e -> addTest());
-        backButton.addActionListener(e -> closeFrame());
+        backButton.addActionListener(e -> closeFrame(false));
 
         frame.add(totalpointLabel);
         frame.add(testLabel);
@@ -130,31 +120,22 @@ public class AddTestUI
         frame.add(backButton);
         frame.add(addSubjButton);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame();
-            }
-        });
+        frame.closeEvent(this);
     }
-    private void closeFrame()
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
-        if(idLesson == 0)
-            Controller.ShowLessonListAdminUI(idChapter, lessonPage, chapterPage);
+        if(Controller.getIdLesson() == 0)
+            Controller.ShowLessonListAdminUI();
         else
-            Controller.ShowLessonAdminUI(idLesson, idChapter,lessonPage,chapterPage);
+            Controller.ShowLessonAdminUI();
     }
     private void addTest()
     {
         if(!addSubj())
             return;
 
+        int idChapter = Controller.getIdChapter(),idLesson = Controller.getIdLesson();
         Chapter chapter = Controller.getChapters().get(idChapter);
         Lesson lesson = null;
         String safename;
@@ -187,13 +168,13 @@ public class AddTestUI
         {
             Test test = new Test(idChapter, -1);
             chapter.setTest(test);
-            Controller.ShowLessonListAdminUI(idChapter, lessonPage, chapterPage);
+            Controller.ShowLessonListAdminUI();
         }
         else
         {
             Test test = new Test(idChapter,idLesson);
             lesson.setTest(test);
-            Controller.ShowLessonAdminUI(idLesson, idChapter,lessonPage,chapterPage);
+            Controller.ShowLessonAdminUI();
         }
 
         Output.PopUp(Lang.SuccessAddTest);

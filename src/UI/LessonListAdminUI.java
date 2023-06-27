@@ -6,40 +6,23 @@ import Learn.Chapter;
 import Learn.Lesson;
 import Util.Output;
 import Util.Pagination;
-
+import Util.Frame;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.function.Function;
 
-public class LessonListAdminUI
+public class LessonListAdminUI implements CallBack
 {
-    private JFrame frame;
-    private int currPage,chapterPage,idChapter;
-    public LessonListAdminUI(int idChapter, int lastPage)
+    private final Frame frame;
+    public LessonListAdminUI()
     {
-        startUI(idChapter, lastPage, 0);
-    }
+        Controller.setIdLesson(0);
 
-    public LessonListAdminUI(int idChapter, int lastPage, int currPage)
-    {
-        startUI(idChapter, lastPage, currPage);
-    }
+        Chapter chapter = Controller.getChapters().get(Controller.getIdChapter());
 
-    private void startUI(int idChapter, int lastPage, int currPage)
-    {
-        this.idChapter = idChapter;
-        this.currPage=currPage;
-        this.chapterPage = lastPage;
-        Chapter chapter = Controller.getChapters().get(idChapter);
-
-        frame = new JFrame(chapter.getName());
-        frame.setSize(1000, 750);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(chapter.getName(),1000, 750);
 
         LinkedList<JButton> myList = new LinkedList<>();
 
@@ -62,13 +45,12 @@ public class LessonListAdminUI
             myList.add(lessonButton);
         }
 
-
         JButton addButton = new JButton(Lang.AddLessonLabel_Two);
         addButton.addActionListener(e->pressAddButton());
         addButton.setBounds(825, 0, 150, 50);
 
         JButton editButton = new JButton(Lang.EditChapterLabel);
-        editButton.addActionListener(e->Controller.ShowEditChapterUI(frame,idChapter,currPage,chapterPage));
+        editButton.addActionListener(e->Controller.ShowEditChapterUI());
         editButton.setBounds(825, 50, 150, 50);
 
         JButton testButton = new JButton(Lang.AddTestLabel_Two);
@@ -86,53 +68,45 @@ public class LessonListAdminUI
         frame.add(addButton);
         frame.add(editButton);
 
-        Function<Integer,Integer> func = (x) -> (this.currPage+=x);
-        Pagination.start(myList,currPage,frame, 12,func,0,0,800,50);
-
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame();
-            }
-        });
+        Pagination.start(myList,Controller.getPageLesson(),frame, 12,Controller.funcPageLesson(),0,0,800,50);
+        frame.closeEvent(this);
     }
-    private void closeFrame()
+    public Frame getFrame(){return frame;}
+
+    public void goBack()
     {
-        frame.dispose();
-        Controller.ShowChaptersAdminUI(chapterPage);
+        Controller.ShowChaptersAdminUI();
     }
     private void pressLessonButton(ActionEvent e)
     {
+        if(!frame.canSkip(true))
+            return;
         JButton element = (JButton) e.getSource();
-        frame.dispose();
-        Controller.ShowLessonAdminUI(Integer.parseInt(element.getName()),idChapter,currPage,chapterPage);
+        Controller.setIdLesson(Integer.parseInt(element.getName()));
+        Controller.ShowLessonAdminUI();
     }
     private void pressAddButton()
     {
-        frame.dispose();
-        Controller.ShowAddLessonUI(idChapter,currPage,chapterPage);
+        if(!frame.canSkip(true))
+            return;
+        Controller.ShowAddLessonUI();
     }
     private void pressTestButton()
     {
+        if(!frame.canSkip(true))
+            return;
+        int idChapter = Controller.getIdChapter();
         Chapter chapter = Controller.getChapters().get(idChapter);
         if(!chapter.hasTest())
         {
-            frame.dispose();
-            Controller.ShowAddTestUI(0, idChapter, currPage, chapterPage);
+            Controller.ShowAddTestUI();
             return;
         }
         if(!chapter.removeTest())
         {
-            Output.PopUpAlert(Lang.GenericError);
+            Output.PopUpAlert(Lang.GenericError);//stops the app
             return;
         }
-        frame.dispose();
-        Controller.ShowLessonListAdminUI(idChapter, chapterPage, currPage);
+        Controller.ShowLessonListAdminUI();
     }
 }

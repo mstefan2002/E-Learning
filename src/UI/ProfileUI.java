@@ -1,12 +1,9 @@
 package UI;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import javax.swing.JPanel;
 import javax.swing.JButton;
 import Client.Client;
@@ -14,17 +11,17 @@ import Client.Admin;
 import Controller.*;
 import Util.Output;
 import Util.Util;
+import Util.Frame;
 import Lang.Lang;
-public class ProfileUI
+public class ProfileUI implements CloseFrame
 {
     private final JTextField nameField,lastnameField,emailField,ageField;
     private final Object cl;
-    public ProfileUI(Object ObClient)
+    private final Frame frame;
+    public ProfileUI()
     {
-        this.cl = ObClient;
-        JFrame frame = new JFrame(Lang.ProfileTitle);
-        frame.setSize(300, 350);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        this.cl = Controller.getClient();
+        frame = new Frame(Lang.ProfileTitle,300, 350);
         frame.setLayout(new GridLayout(0,1));
 
         JLabel nameLabel = new JLabel(Lang.NameLabel);
@@ -32,14 +29,14 @@ public class ProfileUI
         JLabel emailLabel = new JLabel(Lang.EmailLabel);
         JLabel ageLabel = new JLabel(Lang.AgeLabel);
 
-        Client client = (Client)ObClient;
+        Client client = (Client)cl;
         nameField = new JTextField(client.getName());
         lastnameField = new JTextField(client.getLastName());
         emailField = new JTextField(client.getEmail());
         ageField = new JTextField(String.valueOf(client.getAge()));
 
         String role;
-        if(ObClient instanceof Admin)
+        if(cl instanceof Admin)
             role = Lang.ProfileRoleAdminLabel;
         else
             role = Lang.ProfileRoleUserLabel;
@@ -48,7 +45,7 @@ public class ProfileUI
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e -> Controller.goBackDashboard(frame));
+        backButton.addActionListener(e -> closeFrame(false));
 
         JButton saveButton = new JButton(Lang.Save);
         saveButton.addActionListener(e -> saveEdit());
@@ -68,18 +65,12 @@ public class ProfileUI
         frame.add(usernameLabel);
         frame.add(buttonPanel);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                Controller.goBackDashboard(frame);
-            }
-        });
+        frame.closeEvent(this);
+    }
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.goBackDashboard();
     }
     private void saveEdit()
     {

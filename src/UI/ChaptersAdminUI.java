@@ -3,38 +3,21 @@ package UI;
 import Controller.Controller;
 import Learn.Chapter;
 import Lang.Lang;
+import Util.Frame;
 import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.function.Function;
 
-
-public class ChaptersAdminUI
+public class ChaptersAdminUI implements CallBack
 {
-    private JFrame frame;
-    private int currPage;
+    private final Frame frame;
 
     public ChaptersAdminUI()
     {
-        startUI( 0);
-    }
-
-    public ChaptersAdminUI(int curPage)
-    {
-        startUI(curPage);
-    }
-
-    private void startUI(int curPage)
-    {
-        currPage=curPage;
-        frame = new JFrame(Lang.ManagerChaptersTitle);
-        frame.setSize(1000, 750);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.ManagerChaptersTitle,1000, 750);
 
         LinkedList<JButton> myList = new LinkedList<>();
 
@@ -57,36 +40,32 @@ public class ChaptersAdminUI
 
 
         JButton addButton = new JButton(Lang.AddChapterField);
-        addButton.addActionListener(e -> Controller.ShowAddChapterUI(frame));
+        addButton.addActionListener(e -> Controller.ShowAddChapterUI());
         addButton.setBounds(825, 0, 150, 50);
 
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e -> Controller.goBackDashboard(frame));
+        backButton.addActionListener(e -> closeFrame());
         backButton.setBounds(825, 50, 150, 50);
 
         frame.add(backButton);
         frame.add(addButton);
 
-        Function<Integer,Integer> func = (x) -> (currPage+=x);
-        Pagination.start(myList,curPage,frame, 12,func,0,0,800,50);
+        Pagination.start(myList,Controller.getPageChapter(),frame, 12,Controller.funcPageChapter(),0,0,800,50);
 
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                Controller.goBackDashboard(frame);
-            }
-        });
+        frame.closeEvent(this);
+    }
+    public Frame getFrame(){return frame;}
+
+    public void goBack()
+    {
+        Controller.goBackDashboard();
     }
     private void pressChapter(ActionEvent e)
     {
+        if(!frame.canSkip(true))
+            return;
         JButton element = (JButton) e.getSource();
-        frame.dispose();
-        Controller.ShowLessonListAdminUI(Integer.parseInt(element.getName()),currPage);
+        Controller.setIdChapter(Integer.parseInt(element.getName()));
+        Controller.ShowLessonListAdminUI();
     }
 }

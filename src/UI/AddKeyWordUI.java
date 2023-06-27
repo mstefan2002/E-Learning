@@ -2,23 +2,21 @@ package UI;
 
 import Controller.Controller;
 import Util.Output;
-
+import Util.Frame;
 import javax.swing.*;
 import java.awt.*;
 import Lang.Lang;
 
-public class AddKeyWordUI
+public class AddKeyWordUI implements CloseFrame
 {
     private final JTextField nameField;
-    private final JFrame frame;
+    private final Frame frame;
     private final JTextArea infoField;
-    public AddKeyWordUI(int idLesson,int idChapter, int lessonPage, int chapterPage, JFrame originalframe)
+    public AddKeyWordUI()
     {
-        frame = new JFrame(Lang.AddKeyWordTitle);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Controller.addPreventGoingBack();
+        frame = new Frame(Lang.AddKeyWordTitle,800, 800);
         frame.getContentPane().setBackground(Color.GRAY);
-        frame.setLayout(null);
-        frame.setSize(800, 800);
 
         JLabel nameLabel = new JLabel(Lang.KeyWordName);
         nameLabel.setBounds(20, 20, 100, 30);
@@ -39,11 +37,11 @@ public class AddKeyWordUI
 
         JButton addButton = new JButton(Lang.Add);
         addButton.setBounds(400, 510, 150, 50);
-        addButton.addActionListener(e -> addWord(idLesson,idChapter, lessonPage, chapterPage,originalframe));
+        addButton.addActionListener(e -> addWord());
 
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(250, 510, 150, 50);
-        backButton.addActionListener(e -> frame.dispose());
+        backButton.addActionListener(e -> closeFrame(true));
 
         frame.add(nameLabel);
         frame.add(nameField);
@@ -52,11 +50,18 @@ public class AddKeyWordUI
         frame.add(addButton);
         frame.add(backButton);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+        frame.closeEvent(this);
     }
-    private void addWord(int idLesson,int idChapter, int lessonPage, int chapterPage, JFrame originalframe)
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.removePreventGoingBack();
+        if(onlyFrame)
+            return;
+        Controller.getCurrentFrame().dispose();
+        Controller.ShowLessonAdminUI();
+    }
+    private void addWord()
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())
@@ -70,11 +75,9 @@ public class AddKeyWordUI
             Output.PopUpAlert(Lang.KeyWordInfoEmpty);
             return;
         }
-        if(!Controller.getChapters().get(idChapter).getLessons().get(idLesson).addWord(name,infoText))//we have PopUps message in the addWord method
+        if(!Controller.getChapters().get(Controller.getIdChapter()).getLessons().get(Controller.getIdLesson()).addWord(name,infoText))//we have PopUps message in the addWord method
             return;
 
-        frame.dispose();
-        originalframe.dispose();
-        Controller.ShowLessonAdminUI(idLesson,idChapter,lessonPage,chapterPage);
+        closeFrame(false);
     }
 }

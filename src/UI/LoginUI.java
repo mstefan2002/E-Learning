@@ -3,7 +3,7 @@ package UI;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
-
+import Util.Frame;
 import Lang.Lang;
 import Util.Output;
 import Util.FileHandler;
@@ -15,12 +15,10 @@ public class LoginUI
 {
     private final JTextField usernameField;
     private final JPasswordField passwordField;
-    private final JFrame frame;
+    private final Frame frame;
     public LoginUI()
     {
-        frame = new JFrame(Lang.LoginTitle);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setSize(300, 200);
+        frame = new Frame(Lang.LoginTitle,300, 200);
         frame.setLayout(new BorderLayout());
 
         JPanel loginPanel = new JPanel(new GridLayout(3, 2, 10, 10));
@@ -41,12 +39,7 @@ public class LoginUI
 
         frame.add(loginPanel, BorderLayout.CENTER);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
         loginButton.addActionListener(e -> PressButton());
-
     }
     private void PressButton()
     {
@@ -83,7 +76,8 @@ public class LoginUI
                 else
                     client = new User(username, hash.get("name"), hash.get("lastname"), hash.get("email"), Integer.parseInt(hash.get("age")));
                 Controller.setClient(client);
-                Controller.goBackDashboard(frame);
+                frame.dispose();
+                Controller.goBackDashboard();
                 return false; // we found the account and the password match
             }
 

@@ -4,13 +4,12 @@ import Controller.*;
 import Client.Admin;
 import javax.swing.*;
 import Lang.Lang;
+import Util.Frame;
 public class MainAdminUI
 {
     public MainAdminUI(Admin client)
     {
-        JFrame frame = new JFrame(Lang.DashboardTitle);
-        frame.setSize(400, 290);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        Frame frame = new Frame(Lang.DashboardTitle,400, 290);
 
         JLabel welcomeLabel = new JLabel(Lang.WelcomeLabel.replace("{{$lastName}}",client.getLastName()).replace("{{$name}}",client.getName()));
         welcomeLabel.setBounds(0, 0, 400, 80);
@@ -53,10 +52,5 @@ public class MainAdminUI
         frame.add(studentButton);
         frame.add(chaptersButton);
         frame.add(subjButton);
-
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
     }
 }

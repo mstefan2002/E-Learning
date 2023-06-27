@@ -8,32 +8,15 @@ import Util.Pagination;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.function.Function;
-
-public class ChapterUI
+import Util.Frame;
+public class ChapterUI implements CloseFrame
 {
-    private JFrame frame;
-    private int currPage;
+    private final Frame frame;
     public ChapterUI()
     {
-        startUI(0);
-    }
-
-    public ChapterUI(int curPage)
-    {
-        startUI(curPage);
-    }
-
-    private void startUI(int curPage)
-    {
-        currPage=curPage;
-        frame = new JFrame(Lang.ChaptersTitle);
-        frame.setSize(1000, 750);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.ChaptersTitle,1000, 750);
 
         LinkedList<JButton> myList = new LinkedList<>();
 
@@ -60,31 +43,23 @@ public class ChapterUI
         }
 
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e->Controller.goBackDashboard(frame));
+        backButton.addActionListener(e->closeFrame(false));
         backButton.setBounds(825, 0, 150, 50);
 
         frame.add(backButton);
-
-        Function<Integer,Integer> func = (x) -> (currPage+=x);
-        Pagination.start(myList,curPage,frame, 12,func,0,0,800,50);
-
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                Controller.goBackDashboard(frame);
-            }
-        });
+        Pagination.start(myList,Controller.getPageChapter(),frame, 12,Controller.funcPageChapter(),0,0,800,50);
+        frame.closeEvent(this);
+    }
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.goBackDashboard();
     }
     private void pressChapter(ActionEvent e)
     {
         JButton element = (JButton) e.getSource();
         frame.dispose();
-        Controller.ShowLessonListUserUI(Integer.parseInt(element.getName()),currPage);
+        Controller.setIdChapter(Integer.parseInt(element.getName()));
+        Controller.ShowLessonListUserUI();
     }
 }

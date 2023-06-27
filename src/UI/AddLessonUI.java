@@ -7,25 +7,22 @@ import Lang.Lang;
 import Util.Output;
 import Util.FileHandler;
 import Util.Util;
-
+import Util.Frame;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddLessonUI
+public class AddLessonUI implements CloseFrame
 {
-    private final JFrame frame;
+    private final Frame frame;
     private final JTextField nameField;
     private final JTextArea lessonField;
 
-    public AddLessonUI(int idChapter,int currPage,int chapterPage)
+    public AddLessonUI()
     {
-        frame = new JFrame(Lang.AddLessonTitle);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.AddLessonTitle,1200, 720);
         frame.getContentPane().setBackground(Color.GRAY);
-        frame.setLayout(null);
-        frame.setSize(1200, 720);
 
         JLabel nameLabel = new JLabel(Lang.LessonNameLabel);
         nameLabel.setBounds(20, 20, 100, 30);
@@ -46,11 +43,11 @@ public class AddLessonUI
 
         JButton addButton = new JButton(Lang.AddLessonLabel);
         addButton.setBounds(975, 20, 150, 50);
-        addButton.addActionListener(e -> addLesson(idChapter, currPage, chapterPage));
+        addButton.addActionListener(e -> addLesson());
 
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(975, 70, 150, 50);
-        backButton.addActionListener(e -> closeFrame(idChapter,currPage,chapterPage));
+        backButton.addActionListener(e -> closeFrame(false));
 
         frame.add(nameLabel);
         frame.add(nameField);
@@ -58,17 +55,14 @@ public class AddLessonUI
         frame.add(scrollPane);
         frame.add(addButton);
         frame.add(backButton);
-
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+        frame.closeEvent(this);
     }
-    private void closeFrame(int idChapter,int currPage,int chapterPage)
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
-        Controller.ShowLessonListAdminUI(idChapter, currPage, chapterPage);
+        Controller.ShowLessonListAdminUI();
     }
-    private void addLesson(int idChapter,int currPage,int chapterPage)
+    private void addLesson()
     {
         String name = nameField.getText();
         if(name.trim().isEmpty())
@@ -82,6 +76,7 @@ public class AddLessonUI
             Output.PopUpAlert(Lang.EmptyLessonField);
             return;
         }
+        int idChapter = Controller.getIdChapter();
         Chapter chapter = Controller.getChapters().get(idChapter);
         Map<Integer, Lesson> hashMapLessons= chapter.getLessons();
         int szLesson = hashMapLessons.size();
@@ -116,6 +111,6 @@ public class AddLessonUI
         hashMapLessons.get(szLesson).init();
 
         Output.PopUp(Lang.SuccessAddLesson);
-        closeFrame(idChapter,currPage,chapterPage);
+        closeFrame(false);
     }
 }

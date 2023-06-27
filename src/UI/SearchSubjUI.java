@@ -10,25 +10,21 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
+import Util.Frame;
 import Lang.Lang;
 
-public class SearchSubjUI
+public class SearchSubjUI implements CloseFrame
 {
-    private final JFrame frame;
+    private final Frame frame;
     private final LinkedList<JButton> myList;
     private final JTextField searchField;
     private final JPanel panel;
     public SearchSubjUI()
     {
-        frame = new JFrame(Lang.ManagerSubjectTitle);
-        frame.setSize(1000, 800);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.ManagerSubjectTitle,1000, 800);
 
         JLabel searchLabel = new JLabel(Lang.SearchLabel);
         searchLabel.setBounds(10,10,400,20);
@@ -72,7 +68,7 @@ public class SearchSubjUI
         }
 
         JButton backButton = new JButton(Lang.Back);
-        backButton.addActionListener(e->Controller.goBackDashboard(frame));
+        backButton.addActionListener(e->closeFrame(false));
         backButton.setBounds(825, 10, 150, 30);
 
         frame.add(backButton);
@@ -81,20 +77,14 @@ public class SearchSubjUI
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         scrollPane.setBounds(0, 100, 800, 640);
-        frame.getContentPane().add(scrollPane);
 
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                Controller.goBackDashboard(frame);
-            }
-        });
+        frame.getContentPane().add(scrollPane);
+        frame.closeEvent(this);
+    }
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.goBackDashboard();
     }
     private void search()
     {

@@ -9,22 +9,20 @@ import Util.PrinterUtil;
 import Lang.Lang;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import Util.Frame;
 
-public class LessonUserUI
+public class LessonUserUI implements CloseFrame
 {
-    public LessonUserUI(int idLesson, int idChapter, int lessonPage, int chapterPage)
+    private final Frame frame;
+    public LessonUserUI()
     {
+        int idLesson = Controller.getIdLesson();
         User user = (User)Controller.getClient();
-        Chapter chapter = Controller.getChapters().get(idChapter);
+        Chapter chapter = Controller.getChapters().get(Controller.getIdChapter());
         Lesson lesson = chapter.getLessons().get(idLesson);
         String chapterName = chapter.getName();
 
-        JFrame frame = new JFrame(lesson.getName());
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLayout(null);
-        frame.setSize(1200, 720);
+        frame = new Frame(lesson.getName(),1200, 720);
 
         JEditorPane lessonField = new JEditorPane("text/html", lesson.getLessonText().replaceAll("\n","<br>").replaceAll("\t","&nbsp;"));
         lessonField.setEditable(false);
@@ -50,7 +48,7 @@ public class LessonUserUI
                 return;
             }
             frame.dispose();
-            Controller.ShowTestUserUI(idLesson, idChapter, lessonPage, chapterPage);
+            Controller.ShowTestUserUI();
         });
         if(user.getTest(chapterName,idLesson)>0)
             testButton.setEnabled(false);
@@ -78,7 +76,7 @@ public class LessonUserUI
         });
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(975, 200, 150, 50);
-        backButton.addActionListener(e -> closeFrame(frame,idChapter, lessonPage, chapterPage));
+        backButton.addActionListener(e -> closeFrame(false));
 
         frame.add(printButton);
         frame.add(scrollPane);
@@ -87,21 +85,11 @@ public class LessonUserUI
         if(lesson.hasTest())
             frame.add(testButton);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame(frame,idChapter, lessonPage, chapterPage);
-            }
-        });
+        frame.closeEvent(this);
     }
-    private void closeFrame(JFrame frame,int idChapter,int lessonPage,int chapterPage)
+    public void closeFrame(boolean onlyFrame)
     {
         frame.dispose();
-        Controller.ShowLessonListUserUI(idChapter, lessonPage, chapterPage);
+        Controller.ShowLessonListUserUI();
     }
 }

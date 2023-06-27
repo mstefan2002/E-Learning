@@ -1,6 +1,5 @@
 package UI;
 
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.*;
@@ -12,31 +11,29 @@ import Controller.*;
 import Learn.Chapter;
 import Util.Output;
 import Util.FileHandler;
+import Util.Frame;
 import Lang.Lang;
 
-public class AddChapterUI
+public class AddChapterUI implements CloseFrame
 {
-    private final JFrame frame,originFrame;
+    private final Frame frame;
     private final JTextField nameField;
 
-    public AddChapterUI(JFrame originFrame)
+    public AddChapterUI()
     {
-        this.originFrame = originFrame;
+        Controller.addPreventGoingBack();
 
-        frame = new JFrame(Lang.AddChapterFrameTitle);
-        frame.setSize(300, 200);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame = new Frame(Lang.AddChapterFrameTitle,300, 200);
         frame.setLayout(new GridLayout(0,1));
 
         JLabel nameLabel = new JLabel(Lang.NameChapterLabel);
-
         nameField = new JTextField();
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setSize(300, 150);
 
         JButton backButton = new JButton(Lang.Cancel);
-        backButton.addActionListener(e -> frame.dispose());
+        backButton.addActionListener(e -> closeFrame(true));
 
         JButton addButton = new JButton(Lang.Add);
         addButton.addActionListener(e -> addChapter());
@@ -47,10 +44,16 @@ public class AddChapterUI
         frame.add(nameLabel);
         frame.add(nameField);
         frame.add(buttonPanel);
-
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
+        frame.closeEvent(this);
+    }
+    public void closeFrame(boolean onlyFrame)
+    {
+        frame.dispose();
+        Controller.removePreventGoingBack();
+        if(onlyFrame)
+            return;
+        Controller.getCurrentFrame().dispose();
+        Controller.ShowChaptersAdminUI();
     }
     private void addChapter()
     {
@@ -86,9 +89,6 @@ public class AddChapterUI
         chapters.get(sz).init();
 
         Output.PopUp(Lang.SuccessAddChapter);
-        frame.dispose();
-        originFrame.dispose();
-        Controller.ShowChaptersAdminUI();
-
+        closeFrame(false);
     }
 }

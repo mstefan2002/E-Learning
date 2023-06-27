@@ -4,23 +4,20 @@ import Controller.Controller;
 import Learn.Chapter;
 import Learn.Lesson;
 import Util.Output;
+import Util.Frame;
 import Lang.Lang;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
-public class LessonAdminUI
+public class LessonAdminUI implements CallBack
 {
-    public LessonAdminUI(int idLesson, int idChapter, int lessonPage, int chapterPage)
+    private final Frame frame;
+    public LessonAdminUI()
     {
-        Chapter chapter = Controller.getChapters().get(idChapter);
-        Lesson lesson = chapter.getLessons().get(idLesson);
+        Chapter chapter = Controller.getChapters().get(Controller.getIdChapter());
+        Lesson lesson = chapter.getLessons().get(Controller.getIdLesson());
 
-        JFrame frame = new JFrame(lesson.getName());
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        frame.setLayout(null);
-        frame.setSize(1200, 720);
+        frame = new Frame(lesson.getName(),1200, 720);
 
         JEditorPane lessonField = new JEditorPane("text/html", lesson.getLessonText().replaceAll("\n","<br>").replaceAll("\t","&nbsp;"));
         lessonField.setEditable(false);
@@ -38,14 +35,16 @@ public class LessonAdminUI
 
         JButton addButton = new JButton(Lang.AddKeyLabel);
         addButton.setBounds(975, 20, 150, 80);
-        addButton.addActionListener(e -> Controller.ShowAddKeyWordUI(idLesson,idChapter, lessonPage, chapterPage, frame));
+        addButton.addActionListener(e -> Controller.ShowAddKeyWordUI());
 
         JButton testButton = new JButton(Lang.AddTestLabel_Two);
         testButton.setBounds(975, 100, 150, 50);
         testButton.addActionListener(e ->
         {
+            if(!frame.canSkip(true))
+                return;
             frame.dispose();
-            Controller.ShowAddTestUI(idLesson,idChapter, lessonPage, chapterPage);
+            Controller.ShowAddTestUI();
         });
 
         JButton deltestButton = new JButton(Lang.DeleteTestLabel);
@@ -59,12 +58,12 @@ public class LessonAdminUI
             }
             Output.PopUp(Lang.SuccessDeletingTest);
             frame.dispose();
-            Controller.ShowLessonAdminUI(idLesson,idChapter,lessonPage,chapterPage);
+            Controller.ShowLessonAdminUI();
         });
 
         JButton backButton = new JButton(Lang.Back);
         backButton.setBounds(975, 150, 150, 50);
-        backButton.addActionListener(e -> closeFrame(frame,idChapter, lessonPage, chapterPage));
+        backButton.addActionListener(e -> closeFrame());
 
         frame.add(scrollPane);
         frame.add(addButton);
@@ -74,21 +73,12 @@ public class LessonAdminUI
         else
             frame.add(deltestButton);
 
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter()
-        {
-            @Override
-            public void windowClosing(WindowEvent e)
-            {
-                closeFrame(frame,idChapter, lessonPage, chapterPage);
-            }
-        });
+        frame.closeEvent(this);
     }
-    private void closeFrame(JFrame frame, int idChapter, int lessonPage, int chapterPage)
+    public Frame getFrame(){return frame;}
+
+    public void goBack()
     {
-        frame.dispose();
-        Controller.ShowLessonListAdminUI(idChapter, lessonPage, chapterPage);
+        Controller.ShowLessonListAdminUI();
     }
 }

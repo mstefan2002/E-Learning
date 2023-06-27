@@ -9,24 +9,79 @@ import Util.Util;
 import javax.swing.JFrame;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class Controller
 {
-    private static int idChapter,idLesson,idSubject,currChapter,currLesson,currTest,currSubject;
+    private static JFrame currentFrame;
+    public static JFrame getCurrentFrame()
+    {
+        return currentFrame;
+    }
+
+    public static void setCurrentFrame(JFrame currentFrame)
+    {
+        Controller.currentFrame = currentFrame;
+    }
+    private static int preventGoingBack = 0;
+    public static int isPreventGoingBack()
+    {
+        return preventGoingBack;
+    }
+    public static void addPreventGoingBack()
+    {
+        ++Controller.preventGoingBack;
+    }
+    public static void removePreventGoingBack()
+    {
+        --Controller.preventGoingBack;
+    }
+    private static int idChapter,idLesson,pageChapter,pageLesson,pageUser;
+    public static int getIdChapter()
+    {
+        return idChapter;
+    }
+
+    public static void setIdChapter(int idChapter)
+    {
+        Controller.idChapter = idChapter;
+    }
+
+    public static int getIdLesson()
+    {
+        return idLesson;
+    }
+
+    public static void setIdLesson(int idLesson)
+    {
+        Controller.idLesson = idLesson;
+    }
+
+    public static int getPageChapter()
+    {
+        return pageChapter;
+    }
+    public static int getPageLesson()
+    {
+        return pageLesson;
+    }
+    public static int getPageUser()
+    {
+        return pageUser;
+    }
+    public static Function<Integer,Integer> funcPageChapter()
+    {
+        return (x) -> (pageChapter+=x);
+    }
+    public static Function<Integer,Integer> funcPageLesson()
+    {
+        return (x) -> (pageLesson+=x);
+    }
+    public static Function<Integer,Integer> funcPageUser()
+    {
+        return (x) -> (pageUser+=x);
+    }
     private static Object client;
-    private static Map<Integer, Chapter> chapters;
-    public static Map<Integer, Chapter> getChapters()
-    {
-        return chapters;
-    }
-    public static void goBackDashboard(JFrame frame)
-    {
-        if(client instanceof Admin)
-            Controller.ShowAdminUI();
-        else
-            Controller.ShowUserUI();
-        frame.dispose();
-    }
     public static void setClient(Object user)
     {
         client = user;
@@ -35,85 +90,83 @@ public class Controller
     {
         return client;
     }
-    public static void ShowAddChapterUI(JFrame frame)
+    private static Map<Integer, Chapter> chapters;
+    public static Map<Integer, Chapter> getChapters()
     {
-        new AddChapterUI(frame);
+        return chapters;
     }
-    public static void ShowAddKeyWordUI(int idLesson,int chapter, int lessonPage, int chapterPage, JFrame originalframe)
+    public static void goBackDashboard()
     {
-        new AddKeyWordUI(idLesson,chapter, lessonPage, chapterPage, originalframe);
+        if(client instanceof Admin)
+            Controller.ShowAdminUI();
+        else
+            Controller.ShowUserUI();
     }
-    public static void ShowAddLessonUI(int idChapter,int currPage,int chapterPage)
+
+    public static void ShowAddChapterUI()
     {
-        new AddLessonUI(idChapter,currPage,chapterPage);
+        new AddChapterUI();
     }
-    public static void ShowAddTestUI(int idLesson,int idChapter, int lessonPage, int chapterPage)
+    public static void ShowAddKeyWordUI()
     {
-        new AddTestUI(idLesson,idChapter, lessonPage, chapterPage);
+        new AddKeyWordUI();
     }
-    public static void ShowAddUserUI(JFrame frame)
+    public static void ShowAddLessonUI()
     {
-        new AddUserUI(frame);
+        new AddLessonUI();
+    }
+    public static void ShowAddTestUI()
+    {
+        new AddTestUI();
+    }
+    public static void ShowAddUserUI()
+    {
+        new AddUserUI();
     }
     public static void ShowUsersUI()
     {
-        new AdminUsersUI((Admin)client);
-    }
-    public static void ShowUsersUI(int curPage)
-    {
-        new AdminUsersUI((Admin)client,curPage);
+        AdminUsersUI aux = new AdminUsersUI();
+        setCurrentFrame(aux.getFrame());
     }
     public static void ShowChaptersAdminUI()
     {
-        new ChaptersAdminUI();
-    }
-    public static void ShowChaptersAdminUI(int page)
-    {
-        new ChaptersAdminUI(page);
+        ChaptersAdminUI aux = new ChaptersAdminUI();
+        setCurrentFrame(aux.getFrame());
     }
     public static void ShowChaptersUI()
     {
         new ChapterUI();
     }
-    public static void ShowChaptersUI(int lastPage)
+    public static void ShowEditChapterUI()
     {
-        new ChapterUI(lastPage);
-    }
-    public static void ShowEditChapterUI(JFrame originFrame,int idChapter, int lessonPage, int chapterPage)
-    {
-        new EditChapterUI(originFrame,idChapter,lessonPage,chapterPage);
+        new EditChapterUI();
     }
     public static void ShowEditSubjectUI(Object parent,int idSubject)
     {
         new EditSubjectUI(parent,idSubject);
     }
-    public static void ShowEditUserUI(JFrame frame,User client,int curPage)
+    public static void ShowEditUserUI(User client)
     {
-        new EditUserUI(frame,client,curPage);
+        new EditUserUI(client);
     }
-    public static void ShowLessonAdminUI(int idLesson, int idChapter, int lessonPage, int chapterPage)
+    public static void ShowLessonAdminUI()
     {
-        new LessonAdminUI(idLesson, idChapter, lessonPage, chapterPage);
+        LessonAdminUI aux = new LessonAdminUI();
+        setCurrentFrame(aux.getFrame());
     }
-    public static void ShowLessonListAdminUI(int idChapter,int lastPage)
+    public static void ShowLessonListAdminUI()
     {
-        new LessonListAdminUI(idChapter,lastPage);
+        LessonListAdminUI aux = new LessonListAdminUI();
+        setCurrentFrame(aux.getFrame());
     }
-    public static void ShowLessonListAdminUI(int idChapter,int lastPage,int curPage)
+    public static void ShowLessonListUserUI()
     {
-        new LessonListAdminUI(idChapter,lastPage,curPage);
+        new LessonListUserUI();
     }
-    public static void ShowLessonListUserUI(int idChapter,int curPage)
+
+    public static void ShowLessonUserUI()
     {
-        new LessonListUserUI(idChapter,curPage);
-    }
-    public static void ShowLessonListUserUI(int idChapter,int lastPage,int curPage)
-    {
-        new LessonListUserUI(idChapter,lastPage,curPage);
-    }
-    public static void ShowLessonUserUI(int idLesson, int idChapter, int lessonPage, int chapterPage)
-    {
-        new LessonUserUI(idLesson, idChapter, lessonPage, chapterPage);
+        new LessonUserUI();
     }
     public static void ShowLoginUI()
     {
@@ -142,14 +195,14 @@ public class Controller
     }
     public static void ShowProfileUI()
     {
-        new ProfileUI(client);
+        new ProfileUI();
     }
     public static void ShowSearchSubjUI()
     {
         new SearchSubjUI();
     }
-    public static void ShowTestUserUI(int idLesson, int idChapter, int lessonPage, int chapterPage)
+    public static void ShowTestUserUI()
     {
-        new TestUserUI( idLesson, idChapter, lessonPage,chapterPage);
+        new TestUserUI();
     }
 }
