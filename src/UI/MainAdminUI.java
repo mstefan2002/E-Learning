@@ -1,10 +1,12 @@
 package UI;
 
+import javax.swing.*;
+
 import Controller.*;
 import Client.Admin;
-import javax.swing.*;
 import Lang.Lang;
 import Util.Frame;
+
 public class MainAdminUI
 {
     public MainAdminUI(Admin client)

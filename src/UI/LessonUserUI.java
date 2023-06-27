@@ -1,14 +1,15 @@
 package UI;
 
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+
 import Client.User;
 import Controller.Controller;
+import Lang.Lang;
 import Learn.Chapter;
 import Learn.Lesson;
 import Util.Output;
 import Util.PrinterUtil;
-import Lang.Lang;
-import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
 import Util.Frame;
 
 public class LessonUserUI implements CloseFrame

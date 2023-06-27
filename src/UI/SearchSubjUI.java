@@ -1,10 +1,5 @@
 package UI;
 
-import Controller.Controller;
-import Learn.Chapter;
-import Learn.Lesson;
-import Learn.Subject;
-import Learn.Test;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -13,8 +8,14 @@ import java.awt.event.ActionEvent;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import Util.Frame;
+
+import Controller.Controller;
+import Learn.Chapter;
+import Learn.Lesson;
+import Learn.Subject;
+import Learn.Test;
 import Lang.Lang;
+import Util.Frame;
 
 public class SearchSubjUI implements CloseFrame
 {

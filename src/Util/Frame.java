@@ -1,13 +1,14 @@
 package Util;
 
-import Controller.Controller;
-import Lang.Lang;
-
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
+import Controller.Controller;
+import Lang.Lang;
 import UI.CallBack;
 import UI.CloseFrame;
+
 public class Frame extends JFrame
 {
     private CallBack callBack;

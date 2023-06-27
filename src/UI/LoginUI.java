@@ -3,13 +3,14 @@ package UI;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Map;
-import Util.Frame;
-import Lang.Lang;
-import Util.Output;
-import Util.FileHandler;
+
 import Client.Admin;
 import Client.User;
 import Controller.*;
+import Lang.Lang;
+import Util.Frame;
+import Util.Output;
+import Util.FileHandler;
 
 public class LoginUI
 {

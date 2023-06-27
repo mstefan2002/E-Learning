@@ -7,12 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+
 import Controller.*;
 import Util.Output;
 import Util.Util;
 import Util.FileHandler;
 import Util.Frame;
 import Lang.Lang;
+
 public class AddUserUI implements CloseFrame
 {
     private final Frame frame;

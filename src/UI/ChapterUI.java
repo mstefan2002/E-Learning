@@ -1,16 +1,17 @@
 package UI;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.Map;
+
 import Client.User;
 import Controller.Controller;
 import Lang.Lang;
 import Learn.Chapter;
 import Util.Pagination;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.LinkedList;
-import java.util.Map;
 import Util.Frame;
+
 public class ChapterUI implements CloseFrame
 {
     private final Frame frame;

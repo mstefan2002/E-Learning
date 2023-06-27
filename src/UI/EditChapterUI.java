@@ -3,14 +3,15 @@ package UI;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import java.awt.*;
-import Util.Frame;
 import java.util.Map;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+
 import Controller.*;
 import Learn.Chapter;
-import Util.Output;
 import Lang.Lang;
+import Util.Output;
+import Util.Frame;
 
 public class EditChapterUI implements CloseFrame
 {

@@ -1,10 +1,11 @@
 package UI;
 
+import javax.swing.*;
+import java.awt.*;
+
 import Controller.Controller;
 import Util.Output;
 import Util.Frame;
-import javax.swing.*;
-import java.awt.*;
 import Lang.Lang;
 
 public class AddKeyWordUI implements CloseFrame

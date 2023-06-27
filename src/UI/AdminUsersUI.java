@@ -1,16 +1,18 @@
 package UI;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.Map;
+
 import Client.Admin;
 import Client.User;
 import Controller.Controller;
 import Util.FileHandler;
 import Util.Output;
-import Lang.Lang;
 import Util.Pagination;
 import Util.Frame;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.LinkedList;
-import java.util.Map;
+import Lang.Lang;
 
 public class AdminUsersUI implements CallBack
 {

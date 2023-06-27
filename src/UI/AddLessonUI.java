@@ -1,5 +1,10 @@
 package UI;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import Controller.Controller;
 import Learn.Chapter;
 import Learn.Lesson;
@@ -8,10 +13,6 @@ import Util.Output;
 import Util.FileHandler;
 import Util.Util;
 import Util.Frame;
-import javax.swing.*;
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddLessonUI implements CloseFrame
 {

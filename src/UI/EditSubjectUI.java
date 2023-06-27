@@ -1,21 +1,21 @@
 package UI;
 
-import Controller.Controller;
-import Learn.*;
-import Util.Util;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import Util.Output;
-import Util.FileHandler;
-import Lang.Lang;
-import Util.Frame;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import Controller.Controller;
+import Learn.*;
+import Lang.Lang;
+import Util.Util;
+import Util.Frame;
+import Util.Output;
+import Util.FileHandler;
 
 public class EditSubjectUI implements CloseFrame
 {

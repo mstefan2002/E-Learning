@@ -1,9 +1,10 @@
 package Client;
 
-import Util.FileHandler;
-import Util.Output;
 import java.util.HashMap;
 import java.util.Map;
+
+import Util.FileHandler;
+import Util.Output;
 import Lang.Lang;
 
 public class Client

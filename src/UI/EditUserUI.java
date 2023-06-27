@@ -4,15 +4,16 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import Util.Frame;
+
+import Client.User;
 import Controller.*;
+import Lang.Lang;
 import Learn.Chapter;
 import Learn.Lesson;
+import Util.Frame;
 import Util.Output;
 import Util.FileHandler;
 import Util.Util;
-import Client.User;
-import Lang.Lang;
 
 public class EditUserUI implements CloseFrame
 {

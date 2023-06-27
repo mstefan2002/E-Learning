@@ -1,5 +1,10 @@
 package UI;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.Map;
+
 import Client.User;
 import Controller.Controller;
 import Lang.Lang;
@@ -7,11 +12,6 @@ import Learn.Chapter;
 import Learn.Lesson;
 import Util.Output;
 import Util.Pagination;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.LinkedList;
-import java.util.Map;
 import Util.Frame;
 
 public class LessonListUserUI implements CloseFrame

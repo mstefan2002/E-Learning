@@ -1,13 +1,15 @@
 package UI;
 
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+
 import Controller.Controller;
 import Learn.Chapter;
 import Learn.Lesson;
 import Util.Output;
 import Util.Frame;
 import Lang.Lang;
-import javax.swing.*;
-import javax.swing.event.HyperlinkEvent;
+
 
 public class LessonAdminUI implements CallBack
 {

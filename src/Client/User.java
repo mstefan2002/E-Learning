@@ -1,13 +1,13 @@
 package Client;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import Controller.Controller;
 import Learn.Chapter;
 import Learn.Lesson;
 import Util.FileHandler;
 import Util.Util;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class User extends Client
 {

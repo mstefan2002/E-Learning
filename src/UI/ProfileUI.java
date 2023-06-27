@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+
 import Client.Client;
 import Client.Admin;
 import Controller.*;
@@ -13,6 +14,7 @@ import Util.Output;
 import Util.Util;
 import Util.Frame;
 import Lang.Lang;
+
 public class ProfileUI implements CloseFrame
 {
     private final JTextField nameField,lastnameField,emailField,ageField;

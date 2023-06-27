@@ -1,6 +1,8 @@
 package UI;
+
 import javax.swing.JButton;
 import javax.swing.JLabel;
+
 import Client.User;
 import Controller.*;
 import Lang.Lang;

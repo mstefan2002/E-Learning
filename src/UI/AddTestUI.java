@@ -6,6 +6,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import Lang.Lang;
 import Learn.Chapter;
@@ -16,10 +20,6 @@ import Util.Output;
 import Util.FileHandler;
 import Util.Util;
 import Util.Frame;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddTestUI implements CloseFrame
 {

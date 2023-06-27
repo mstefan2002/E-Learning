@@ -1,15 +1,15 @@
 package UI;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.Map;
+
 import Controller.Controller;
 import Learn.Chapter;
 import Lang.Lang;
 import Util.Frame;
 import Util.Pagination;
-
-import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.util.LinkedList;
-import java.util.Map;
 
 public class ChaptersAdminUI implements CallBack
 {

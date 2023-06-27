@@ -1,5 +1,10 @@
 package UI;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.LinkedList;
+import java.util.Map;
+
 import Controller.Controller;
 import Lang.Lang;
 import Learn.Chapter;
@@ -7,11 +12,7 @@ import Learn.Lesson;
 import Util.Output;
 import Util.Pagination;
 import Util.Frame;
-import javax.swing.*;
-import java.awt.event.ActionEvent;
 
-import java.util.LinkedList;
-import java.util.Map;
 
 public class LessonListAdminUI implements CallBack
 {

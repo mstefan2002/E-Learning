@@ -1,10 +1,10 @@
 package Util;
 
-import Lang.Lang;
-
 import javax.swing.*;
 import java.util.LinkedList;
 import java.util.function.Function;
+
+import Lang.Lang;
 
 public class Pagination
 {

@@ -1,15 +1,15 @@
 package Controller;
-import Learn.Chapter;
-import UI.*;
-import Client.*;
-import Util.FileHandler;
-import Util.Util;
-
 
 import javax.swing.JFrame;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import Learn.Chapter;
+import UI.*;
+import Client.*;
+import Util.FileHandler;
+import Util.Util;
 
 public class Controller
 {

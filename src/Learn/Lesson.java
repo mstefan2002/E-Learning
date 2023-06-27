@@ -1,14 +1,14 @@
 package Learn;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 import Controller.Controller;
 import Lang.Lang;
 import Util.Output;
 import Util.FileHandler;
 import Util.Util;
-
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Lesson implements Comparable<Lesson>
 {

@@ -1,18 +1,19 @@
 package UI;
 
-import Client.User;
-import Controller.Controller;
-import Learn.Chapter;
-import Learn.Subject;
-import Learn.Test;
-import Util.Output;
-import Lang.Lang;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import Client.User;
+import Controller.Controller;
+import Lang.Lang;
+import Learn.Chapter;
+import Learn.Subject;
+import Learn.Test;
+import Util.Output;
 import Util.Frame;
 
 public class TestUserUI implements CloseFrame

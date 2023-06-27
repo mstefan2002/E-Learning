@@ -1,8 +1,6 @@
 package UI;
 import Util.Frame;
 
-import javax.swing.*;
-
 public interface CallBack
 {
     void goBack();
