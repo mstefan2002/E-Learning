@@ -39,6 +39,7 @@ public class LoginUI
         loginPanel.add(loginButton);
 
         frame.add(loginPanel, BorderLayout.CENTER);
+        frame.setVisible(true); // to update Panel
 
         loginButton.addActionListener(e -> PressButton());
     }

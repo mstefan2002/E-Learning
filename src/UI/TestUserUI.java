@@ -187,7 +187,10 @@ public class TestUserUI implements CloseFrame
         currSubj = 0;
         updateUI();
         updateModeUI();
-        nextButton.setText(Lang.NextSubjectLabel);
+        if(szSubject == 1)
+            nextButton.setText(Lang.ExitLabel);
+        else
+            nextButton.setText(Lang.NextSubjectLabel);
     }
     private String replaceToHtml(String str)
     {
